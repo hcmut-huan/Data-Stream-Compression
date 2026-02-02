@@ -88,13 +88,13 @@ Statistical output of each execution is appended to the ``experiments.csv`` file
 | ``psnr`` | Peak signal-to-noise ratio of the reconstructed data. |
 | ``max_e`` | Maximum error of the reconstructed data. |
 | ``min_e`` | Minimum error of the reconstructed data. |
-| ``max_vsz`` | Maximum virtual memory size (VSZ) used during execution. |
-| ``max_rss`` | Maximum resident set size (RSS) used during execution. |
-| ``c_time`` | Average compression time per data point. |
-| ``c_avg_latency`` | Average compression latency per data point. |
-| ``c_max_latency`` | Maximum compression latency observed. |
-| ``d_time`` | Average decompression time per data segment. |
-| ``max_d_latency`` | Maximum decompression latency observed. |
+| ``max_vsz`` | Maximum virtual memory size (VSZ) used during execution (MB). |
+| ``max_rss`` | Maximum resident set size (RSS) used during execution (MB). |
+| ``c_time`` | Average compression time per data point (ns). |
+| ``c_avg_latency`` | Average compression latency per data point (ns). |
+| ``c_max_latency`` | Maximum compression latency observed (ns). |
+| ``d_time`` | Average decompression time per data segment (ns). |
+| ``max_d_latency`` | Maximum decompression latency observed (ns). |
 
 
 ## Algorithms
