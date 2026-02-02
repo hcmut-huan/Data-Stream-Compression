@@ -46,7 +46,7 @@ It is worth noting that the project relies heavily on header only libraries. As 
 Before execution, create a configuration file corresponding to the algorithm you wish to run.
 
 - Configuration templates are provided in ``conf/template/``.
-- Valid algorithm-specific configurations beyond those predefined in the templates can be identified by inspecting ``src/Python/validate.py``.
+- Valid algorithm-specific configurations beyond those predefined in the templates can be identified by inspecting the corresponding code in ``src/C++/*``.
 
 First we have to compile all C++ files, run the following command. It is worth noting that all are header only libraries and thereby the compile time would takes quite a bit longer.
 
