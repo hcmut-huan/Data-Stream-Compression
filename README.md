@@ -14,9 +14,10 @@ To ensure a fair evaluation, all algorithms are re-implemented in C++, which is 
 .
 ├── bin/              # C++ object and executable files
 ├── conf/             # Configuration files for each algorithm
-├── include/          # Header files defining [de]compressors and algorithms
+├── data/             # Evaluation Datasets
+├── include/          # Header files defining [de]compressor and algorithms
 ├── lib/              # Supporting libraries
-├── results/          # Statistical outputs in CSV format
+├── out/              # Statistical outputs in CSV format
 │   ├── compress/     # Compression results
 │   └── decompress/   # Decompression results
 ├── scripts/          # Shell scripts for compilation and execution
@@ -43,12 +44,25 @@ $ scripts/compile.sh
 It is worth noting that the project relies heavily on header only libraries. As a result, the compilation process may take a quite amount of time.
 
 ### Configuration
-Before execution, create a configuration file corresponding to the algorithm you wish to run.
+Before execution, create a configuration file corresponding to the algorithm wish to run. Configuration files follow the json format below:
+
+```json
+{
+    "data": Original dataset. Only CSV datasets with two columns (time, value) are accepted,
+    "compress": Compressed output under binary format,
+    "decompress": Decompressed output (compared with the original dataset),
+    "interval": Decompressed interval between two consecutive records,
+    "algorithm": {
+        "name": Algorithm name,
+        "error": Maximum individual error threshold,
+        "...": Other algorithm-specific configurations
+    }
+}
+```
 
 - Configuration templates are provided in ``conf/template/``.
 - Valid algorithm-specific configurations beyond those predefined in the templates can be identified by inspecting the corresponding code in ``src/C++/*``.
 
-First we have to compile all C++ files, run the following command. It is worth noting that all are header only libraries and thereby the compile time would takes quite a bit longer.
 
 ### Execution
 To execute an algorithm, run the following command with the corresponding configuration file.
