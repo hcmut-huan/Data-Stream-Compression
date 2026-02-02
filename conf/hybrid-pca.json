@@ -1,0 +1,12 @@
+{
+    "data": "data/scientific-research/Fungi.csv",
+    "compress": "out/compress/Fungi_hybrid-pca.bin",
+    "decompress": "out/decompress/Fungi_hybrid-pca.csv",
+    "interval": 1,
+    "algorithm": {
+        "name": "hybrid-pca",
+        "error": 4.355,
+        "w_size": 40,
+        "n_window": 40
+    }
+}
