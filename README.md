@@ -21,7 +21,7 @@ To ensure a fair evaluation, all algorithms are re-implemented in C++, which is 
 │   └── decompress/   # Decompression results
 ├── scripts/          # Shell scripts for compilation and execution
 └── src/
-    ├── C++/          # Algorithm implementations and main entry points
+    ├── C++/          # Algorithm implementations and the main entry point
     └── Python/       # Configuration validation and statistics generation
 ```
 
