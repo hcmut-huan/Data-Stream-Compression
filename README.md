@@ -44,7 +44,7 @@ $ scripts/compile.sh
 It is worth noting that the project relies heavily on header only libraries. As a result, the compilation process may take a quite amount of time.
 
 ### Configuration
-Before execution, create a configuration file corresponding to the algorithm wish to run. Configuration files follow the json format below:
+Before execution, create a configuration file corresponding to the algorithm which we wish to run. Configuration files follow the json format below:
 
 ```json
 {
