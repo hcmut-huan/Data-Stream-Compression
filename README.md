@@ -125,6 +125,7 @@ This family partitions a data stream into multiple segments, with each represent
 This family partitions a data stream into multiple segments, each represented by **the most suitable model**, which is selected from a set of candidate functions.
 * `adaptive-approximation` : An Adaptive Algorithm for Online Time Series Segmentation with Error Bound Guarantee. (Link: https://dl.acm.org/doi/10.1145/2247596.2247620)
 * `smart-grid-compression` : A Time-series Compression Technique and Its Application to The Smart Grid. (Link: https://link.springer.com/article/10.1007/s00778-014-0368-8)
+* `adapt-ppa` : Ours.
 
 ## Contact
 
