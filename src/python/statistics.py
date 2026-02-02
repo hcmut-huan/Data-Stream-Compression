@@ -44,9 +44,6 @@ def load_monitor(file):
 def rmse(origin_data, approx_data):
     return np.sqrt(np.square(origin_data - approx_data).mean())
 
-def pearsoncorr(origin_data, approx_data):
-    return np.corrcoef(origin_data, approx_data)[0, 1]
-
 def mse(origin_data, approx_data):
     return np.square(origin_data - approx_data).mean()
 
@@ -91,6 +88,5 @@ if __name__ == "__main__":
     print("PSNR:", psnr(origin_data, approx_data))
     print("Max_E:", maxdiff(origin_data, approx_data))
     print("Min_E:", mindiff(origin_data, approx_data))
-    # print("Corr:", pearsoncorr(origin_data, approx_data))
     print("max_vsz:", max_vsz/1024/1024)
     print("max_rss:", max_rss/1024/1024)
