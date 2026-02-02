@@ -1,0 +1,9 @@
+.vscode/
+bin/
+result/
+script/evaluate.sh
+out/
+data/*
+!data/scientific-research/
+!data/scientific-research/Fungi.csv
+data/scientific-research/StarLightCurves.csv
