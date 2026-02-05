@@ -1,6 +1,7 @@
 .vscode/
 bin/
 result/
+conf/
 script/evaluate.sh
 data/*
 !data/scientific-research/
