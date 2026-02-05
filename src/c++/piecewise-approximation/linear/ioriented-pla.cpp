@@ -2,13 +2,13 @@
 
 namespace IOrientedPLA {
     bool Compression::__feasible_cone(BinObj* obj) {
+        if (this->u_line->get_slope() == this->l_line->get_slope()) return false;
+
         Point2D p = Line::intersection(*this->u_line, *this->l_line);
         long u_left = static_cast<long>(std::ceil(this->u_line->get_intercept()));
         long l_left = static_cast<long>(std::floor(this->l_line->get_intercept()));
         long u_right = static_cast<long>(std::floor(this->u_line->subs(this->length)));
         long l_right = static_cast<long>(std::ceil(this->l_line->subs(this->length)));
-
-        if (this->u_line->get_slope() == this->l_line->get_slope()) return false;
         
         if (u_right >= l_right) {
             unsigned long value = ZigZagEncoding::encode(u_right);
@@ -33,35 +33,47 @@ namespace IOrientedPLA {
             return true;
         }   
 
-        // u_root: root that higher than l_root
-        // Not the root of u_line
-        long double u_root = this->u_line->get_root() > this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
-        long double l_root = this->u_line->get_root() <= this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
-
         long root = this->length;
-        if (u_root == INFINITY) {
-            if (l_root > p.x) {
-                root = static_cast<long>(std::ceil(l_root));
+        if (std::abs(this->u_line->get_slope()) < 0.0000001) {
+            if (this->l_line->get_root() > p.x) {
+                root = static_cast<long>(std::ceil(this->l_line->get_root()));
                 if (std::abs(root - p.x) < 0.0000001) root++;
             }
-            else if (l_root <= p.x) {
-                root = static_cast<long>(std::floor(l_root));
+            else {
+                root = static_cast<long>(std::floor(this->l_line->get_root()));
                 if (std::abs(root - p.x) < 0.0000001) root--;
             }
         }
-        else if (this->u_line->get_slope() * this->l_line->get_slope() < 0) {
-            root = static_cast<long>(std::floor(l_root));
-            if (std::abs(root - p.x) < 0.0000001) root--;
+        else if (std::abs(this->l_line->get_slope()) < 0.0000001) {
+            if (this->u_line->get_root() > p.x) {
+                root = static_cast<long>(std::ceil(this->u_line->get_root()));
+                if (std::abs(root - p.x) < 0.0000001) root++;
+            }
+            else {
+                root = static_cast<long>(std::floor(this->u_line->get_root()));
+                if (std::abs(root - p.x) < 0.0000001) root--;
+            }
         }
         else {
-            u_root = static_cast<long>(std::floor(u_root));
-            l_root = static_cast<long>(std::ceil(l_root));
-            
-            if (u_root >= l_root) {
-                root = l_root;
-                if (std::abs(root - p.x) < 0.0000001) {
-                    if (root + 1 <= u_root) root++;
-                    else root = this->length;
+            // u_root: root that higher than l_root
+            // Not the root of u_line
+            long double u_root = this->u_line->get_root() > this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
+            long double l_root = this->u_line->get_root() <= this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
+
+            if (this->u_line->get_slope() * this->l_line->get_slope() < 0) {
+                root = static_cast<long>(std::floor(l_root));
+                if (std::abs(root - p.x) < 0.0000001) root--;
+            }
+            else {
+                u_root = static_cast<long>(std::floor(u_root));
+                l_root = static_cast<long>(std::ceil(l_root));
+                
+                if (u_root >= l_root) {
+                    root = l_root;
+                    if (std::abs(root - p.x) < 0.0000001) {
+                        if (root + 1 <= u_root) root++;
+                        else root = this->length;
+                    }
                 }
             }
         }
