@@ -32,6 +32,10 @@ echo -e "\n-------------------------"
 echo "Start statisticizing..."
 python3 src/python/statistics.py $DATA $DECOMPRESS $COMPRESS > .statistic
 
+if [[ ! -f out/experiments.csv ]]; then
+    echo "Dataset,Algorithm,Error,Compression ratio,mse,rmse,mae,snr,psnr,max_e,min_e,max_vsz,max_rss,c_time,c_avg_latency,c_max_latency,d_time,max_d_time" >> out/experiments.csv
+fi
+
 echo -n $DATA,$(echo $ALGO | awk -F " " '{print $1}'),$(echo $ALGO | awk -F " " '{print $2}') >> out/experiments.csv
 cat .statistic | while read line; do
     echo $line
