@@ -1,5 +1,5 @@
 .vscode/
 bin/
-conf/*.json
 script/evaluate.sh
+data/
 out/
