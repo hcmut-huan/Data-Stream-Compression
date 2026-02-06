@@ -1,5 +1,5 @@
 {
-    "data": "data/scientific-research/Fungi.csv",
+    "data": "data/Fungi.csv",
     "compress": "out/compress/Fungi_smart-grid-compression.bin",
     "decompress": "out/decompress/Fungi_smart-grid-compression.csv",
     "interval": 1,

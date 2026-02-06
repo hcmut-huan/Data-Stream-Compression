@@ -1,5 +1,5 @@
 {
-    "data": "data/scientific-research/Fungi.csv",
+    "data": "data/Fungi.csv",
     "compress": "out/compress/Fungi_adaptive-approximation.bin",
     "decompress": "out/decompress/Fungi_adaptive-approximation.csv",
     "interval": 1,

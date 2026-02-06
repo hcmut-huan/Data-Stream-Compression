@@ -1,5 +1,5 @@
 {
-    "data": "data/scientific-research/Fungi.csv",
+    "data": "data/Fungi.csv",
     "compress": "out/compress/Fungis_optimal-pla.bin",
     "decompress": "out/decompress/Fungi_optimal-pla.csv",
     "interval": 1,

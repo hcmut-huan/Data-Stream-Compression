@@ -1,11 +1,11 @@
 {
-    "data": "data/face/FaceFour.csv",
+    "data": "data/Fungi.csv",
     "compress": "out/compress/Fungi_ioriented-pla.bin",
     "decompress": "out/decompress/Fungi_ioriented-pla.csv",
     "interval": 1,
     "algorithm": {
         "name": "ioriented-pla",
-        "error": 0.106,
+        "error": 4.355,
         "scale": 1
     }
 }
