@@ -38,10 +38,14 @@ To ensure a fair evaluation, all algorithms are re-implemented in C++, which is 
 First, compile all C++ source files by running the following command:
 
 ```bash
-$ scripts/compile.sh
+$ scripts/compile-all.sh
 ```
 
-It is worth noting that the project relies heavily on header only libraries. As a result, the compilation process may take a quite amount of time.
+It is worth noting that the project relies heavily on header only libraries. As a result, the compilation process may take a quite amount of time. However, this is only required for the first time. For subsequent modifications, you can compile just the updated algorithm by running the following command to reduce compile time. 
+
+```bash
+$ scripts/compile.sh <ALGORITHM>
+```
 
 ### Configuration
 Before execution, create a configuration file corresponding to the algorithm which we wish to run. Configuration files follow the json format below:
