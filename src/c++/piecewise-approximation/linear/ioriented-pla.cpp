@@ -158,7 +158,7 @@ namespace IOrientedPLA {
             long i_l_root = static_cast<long>(std::ceil(l_root));
 
             if (i_u_root >= i_l_root && i_u_root >= this->length) {
-                unsigned long value = ZigZagEncoding::encode(u_right);
+                unsigned long value = ZigZagEncoding::encode(u_left);
                 unsigned long z_root = ZigZagEncoding::encode(sign*i_u_root);
                 long embedded = this->length << 3 | 6;
 
