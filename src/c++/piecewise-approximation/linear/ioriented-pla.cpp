@@ -138,11 +138,10 @@ namespace IOrientedPLA {
 
             if (i_u_root >= i_l_root && i_l_root < 0) {
                 unsigned long value = ZigZagEncoding::encode(u_right);
-                unsigned long z_root = ZigZagEncoding::encode(i_l_root);
                 long embedded = this->length << 3 | 5;
 
                 obj->put(VariableByteEncoding::encode(embedded));
-                obj->put(VariableByteEncoding::encode(z_root));
+                obj->put(VariableByteEncoding::encode(-i_l_root));
                 obj->put(VariableByteEncoding::encode(value));
 
                 return true;
@@ -154,14 +153,58 @@ namespace IOrientedPLA {
 
             if (i_u_root >= i_l_root && i_u_root >= this->length) {
                 unsigned long value = ZigZagEncoding::encode(u_left);
-                unsigned long z_root = ZigZagEncoding::encode(i_u_root);
                 long embedded = this->length << 3 | 6;
 
                 obj->put(VariableByteEncoding::encode(embedded));
-                obj->put(VariableByteEncoding::encode(z_root));
+                obj->put(VariableByteEncoding::encode(i_u_root));
                 obj->put(VariableByteEncoding::encode(value));
                 
                 return true;
+            }
+        }
+        else {
+            long u_left = static_cast<long>(std::floor(u_bound.get_intercept()*this->scale));
+            long l_left = static_cast<long>(std::ceil(l_bound.get_intercept()*this->scale));
+
+            if (u_left >= l_left) {                
+                if (u_bound.get_slope() > 0) {
+                    long double u_root = u_bound.get_root(this->upshift) > l_bound.get_root(this->upshift) ? u_bound.get_root(this->upshift) : l_bound.get_root(this->upshift);
+                    long double l_root = u_bound.get_root(this->upshift) <= l_bound.get_root(this->upshift) ? u_bound.get_root(this->upshift) : l_bound.get_root(this->upshift);
+
+                    long i_u_root = static_cast<long>(std::floor(u_root));
+                    long i_l_root = static_cast<long>(std::ceil(l_root));
+
+                    if (i_u_root >= i_l_root && i_u_root >= this->length) {
+                        unsigned long value = ZigZagEncoding::encode(u_left);
+                        unsigned long z_root = ZigZagEncoding::encode(i_u_root);
+                        long embedded = this->length << 3 | 7;
+
+                        obj->put(VariableByteEncoding::encode(embedded));
+                        obj->put(VariableByteEncoding::encode(z_root));
+                        obj->put(VariableByteEncoding::encode(value));
+                        
+                        return true;
+                    }
+                }   
+                else if (u_bound.get_slope() < 0) {
+                    long double u_root = u_bound.get_root(this->downshift) > l_bound.get_root(this->downshift) ? u_bound.get_root(this->downshift) : l_bound.get_root(this->downshift);
+                    long double l_root = u_bound.get_root(this->downshift) <= l_bound.get_root(this->downshift) ? u_bound.get_root(this->downshift) : l_bound.get_root(this->downshift);
+
+                    long i_u_root = static_cast<long>(std::floor(u_root));
+                    long i_l_root = static_cast<long>(std::ceil(l_root));
+
+                    if (i_u_root >= i_l_root && i_u_root >= this->length) {
+                        unsigned long value = ZigZagEncoding::encode(u_left);
+                        unsigned long z_root = ZigZagEncoding::encode(-i_u_root);
+                        long embedded = this->length << 3 | 7;
+
+                        obj->put(VariableByteEncoding::encode(embedded));
+                        obj->put(VariableByteEncoding::encode(z_root));
+                        obj->put(VariableByteEncoding::encode(value));
+                        
+                        return true;
+                    }
+                }         
             }
         }
 
@@ -171,7 +214,9 @@ namespace IOrientedPLA {
     // Begin: compression
     void Compression::initialize(int count, char** params) {
         this->error = atof(params[0]);
-        this->scale = atoi(params[1]);
+        this->scale = atof(params[1]);
+        this->upshift = atof(params[2]);
+        this->downshift = atof(params[3]);
     }
 
     void Compression::finalize() {
@@ -286,6 +331,9 @@ namespace IOrientedPLA {
     // Begin: decompression
     void Decompression::initialize(int count, char** params) {
         // Do nothing
+        this->scale = atof(params[1]);
+        this->upshift = atof(params[2]);
+        this->downshift = atof(params[3]);
     }
 
     void Decompression::finalize() {
@@ -335,20 +383,35 @@ namespace IOrientedPLA {
             intercept = line.get_intercept();
         }
         else if (flag == 5) {
-            long root = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
+            long root = VariableByteEncoding::decode(compress_data);
             long value = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
-            Line line = Line::line(Point2D(root, 0), Point2D(length, value));
+            Line line = Line::line(Point2D(-root, 0), Point2D(length, value));
 
             slp = line.get_slope();
             intercept = line.get_intercept();
         }
         else if (flag == 6) {
-            long root = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
+            long root = VariableByteEncoding::decode(compress_data);
             long value = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
             Line line = Line::line(Point2D(root, 0), Point2D(0, value));
 
             slp = line.get_slope();
             intercept = line.get_intercept();
+        }
+        else if (flag == 7) {
+            long root = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
+            long value = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
+            
+            if (root > 0) {
+                Line line = Line::line(Point2D(root, this->upshift), Point2D(0, (long double) value / this->scale));
+                slp = line.get_slope();
+                intercept = line.get_intercept();
+            }
+            else {
+                Line line = Line::line(Point2D(-root, this->downshift), Point2D(0, (long double) value / this->scale));
+                slp = line.get_slope();
+                intercept = line.get_intercept();
+            }
         }
 
         for (int i=0; i<length; i++) {

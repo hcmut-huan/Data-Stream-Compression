@@ -242,7 +242,9 @@ namespace IOrientedPLA {
     // Source path: src/piecewise-approximation/linear/ioriented-pla.cpp
     class Compression : public BaseCompression {
         private:
-            int scale = 1;
+            long double scale = 1;
+            long double upshift = 0;
+            long double downshift = 0;
             long double error = 0;
 
             Point2D* pivot = nullptr;
@@ -267,6 +269,11 @@ namespace IOrientedPLA {
     };
 
     class Decompression : public BaseDecompression {
+        private:
+            long double scale = 1;
+            long double upshift = 0;
+            long double downshift = 0;
+
         protected:
             CSVObj* decompress(BinObj* compress_data) override;
 

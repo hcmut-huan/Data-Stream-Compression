@@ -56,9 +56,9 @@ class Line {
             this->intercept = intercept;
         }
 
-        long double get_root() {
+        long double get_root(long double shift = 0, long double scale = 1) {
             if (this->slope == 0) return INFINITY;
-            else return - this->intercept / this->slope;
+            else return (shift - scale * this->intercept) / this->slope;
         }
 
         static Line line(Point2D p1, Point2D p2) {

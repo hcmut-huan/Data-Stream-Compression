@@ -34,7 +34,7 @@ def validate(algo):
             exit(Error.MISSING_PARAM.value)
 
     elif algo["name"] == "ioriented-pla":
-        if "error" not in algo or "scale" not in algo:
+        if "error" not in algo or "scale" not in algo or "up" not in algo or "down" not in algo:
             exit(Error.MISSING_PARAM.value)
 
     elif algo["name"] == "semi-optimal-pla":
@@ -95,7 +95,7 @@ def parse(conf):
     elif algo["name"] == "conn-I-pla":
         print("{} {}".format(algo["name"], algo["error"]))
     elif algo["name"] == "ioriented-pla":
-        print("{} {} {}".format(algo["name"], algo["error"], algo["scale"]))
+        print("{} {} {} {} {}".format(algo["name"], algo["error"], algo["scale"], algo["up"], algo["down"]))
     elif algo["name"] == "semi-optimal-pla":
         print("{} {}".format(algo["name"], algo["error"]))
     elif algo["name"] == "semi-mixed-pla":
