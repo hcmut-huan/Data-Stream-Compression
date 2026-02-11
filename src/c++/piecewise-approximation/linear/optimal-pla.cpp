@@ -111,7 +111,7 @@ namespace OptimalPLA {
         }
     }
     // End: compression
-    // int count = 0;
+
     // Begin: decompression
     void Decompression::initialize(int count, char** params) {
         // Do nothing
