@@ -6,12 +6,12 @@
 
 This repository provides a ``unified framework`` for evaluating the performance of compression algorithms in the context of ___univariate___ streaming time series. The framework primarily focuses on comparing lossy functional approximation techniques, due to the fact that they can operate efficiently across arbitrary data domains without requiring explicit training phases.
 
-The framework takes input as a __JSON configuration__ and initialize the compressor and initializes the ``compressor`` and ``decompressor`` accordingly. The corresponding dataset is then loaded and fed to the ``compressor`` sequentially to better simulate a practical streaming environment. Whenever a segment is finalized, it is immediately transmitted to the ``decompressor`` to simulate data transmission from edge to server. Both the ``compressor`` and the ``decompressor`` are monitored by a __separate thread__, and the collected metrics are combined with their respective outputs to produce the final statistics.
+The framework takes input as a __JSON configuration__ and initialize the ``compressor`` and ``decompressor`` accordingly. The corresponding dataset is then loaded and fed to the ``compressor`` sequentially to better simulate a practical streaming environment. Whenever a segment is finalized, it is immediately transmitted to the ``decompressor`` to simulate data transmission from edge to server. Both the ``compressor`` and the ``decompressor`` are monitored by a __separate thread__, and the collected metrics are combined with their respective outputs to produce the final statistics.
 
-<figure align="center">
+<div align="center">
   <img src="framework.svg" width="400">
   <figcaption><b>Figure:</b> Overview of framework architecture.</figcaption>
-</figure>
+</div>
 
 To ensure a fair evaluation, all algorithms are re-implemented in C++, which is commonly supported by edge devices. Streaming behavior is faithfully simulated by feeding data points to the compressor sequentially. The compressed outputs are serialized in binary format and immediately transmitted to the decompressor for simulating data transfer from sources (e.g., sensors) to sinks (e.g., centralized servers).
 
