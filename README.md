@@ -40,7 +40,7 @@ To ensure a fair evaluation, all algorithms are re-implemented in C++, which is 
 - **CPU**: At least ___two cores___ are required due to the use of multithreading for monitoring operations.
 
 ## Dataset
-This repository includes only a representative dataset in order to comply with Git Large File Storage (LFS) quota limitations (saving my quota :p). However, most of the datasets used in the assessment are publicly available and can be easily obtained.
+This repository includes only a representative dataset to comply with Git Large File Storage (LFS) limitations (saving my quota :p). However, most of the datasets used in the assessment are publicly available and can be easily obtained.
 - UCR Time Series Archive: https://www.cs.ucr.edu/%7Eeamonn/time_series_data/
 - Sensor Weather Traces: https://traces.cs.umass.edu/docs/traces/weather/
 - Huge Stock Price: https://www.kaggle.com/datasets/arashnic/stock-data-intraday-minute-ba
