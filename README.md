@@ -39,6 +39,17 @@ To ensure a fair evaluation, all algorithms are re-implemented in C++, which is 
 - **Python**: `numpy` library is required.
 - **CPU**: At least ___two cores___ are required due to the use of multithreading for monitoring operations.
 
+## Dataset
+This repository includes only a representative dataset in order to comply with Git Large File Storage (LFS) quota limitations (saving my quota :p). However, most of the datasets used in the assessment are publicly available and can be easily obtained.
+- UCR Time Series Archive: https://www.cs.ucr.edu/%7Eeamonn/time_series_data/
+- Sensor Weather Traces: https://traces.cs.umass.edu/docs/traces/weather/
+- Huge Stock Price: https://www.kaggle.com/datasets/arashnic/stock-data-intraday-minute-ba
+- HPC-ODA: https://data.europa.eu/data/datasets/oai-zenodo-org-4671477?locale=sl
+- Vehicle Energy Dataset: https://www.kaggle.com/datasets/ayanmaity/vehicle-energy-data
+- Smart* Dataset: https://traces.cs.umass.edu/docs/traces/smartstar/
+- Icentia11k: https://physionet.org/content/icentia11k-continuous-ecg/1.0/
+- LENS dataset: https://github.com/clarkzjw/LENS
+
 ## Execution
 ### Compilation
 
