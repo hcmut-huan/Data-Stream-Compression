@@ -1,0 +1,13 @@
+{
+    "data": "data/scientific-research/Fungi.csv",
+    "compress": "out/compress/Fungi_swab.bin",
+    "decompress": "out/decompress/Fungi_swab.csv",
+    "interval": 1,
+    "algorithm": {
+        "name": "swab",
+        "error": 4.355,
+        "mode": "interpolate",
+        "degree": 1,
+        "n_segment": 6
+    }
+}
