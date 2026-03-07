@@ -57,7 +57,6 @@ def psnr(origin_data, approx_data):
     return 10 * np.log10((np.max(origin_data) ** 2) / mse(origin_data, approx_data))
 
 def maxdiff(origin_data, approx_data):
-    index = np.argmax(np.abs(origin_data - approx_data))
     return np.max(np.abs(origin_data - approx_data))
 
 def mindiff(origin_data, approx_data):
