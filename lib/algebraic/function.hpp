@@ -88,25 +88,26 @@ class Polynomial {
         long double* coefficients;    // coefficient degree starts from 0 
 
     public:
-        Polynomial(int k, const float* coeffs, bool reverse = false) {
-            this->degree = k;
-            this->coefficients = new long double[k+1];
-            if (reverse) for (int i=0; i<k+1; i++) this->coefficients[k-i] = coeffs[i];
-            else for (int i=0; i<k+1; i++) this->coefficients[i] = coeffs[i];
+        template <typename T>
+        Polynomial(int k, const T* coeffs, bool reverse = false) {
+            degree = k;
+            coefficients = new long double[k + 1];
+
+            for (int i = 0; i <= k; i++) {
+                int idx = reverse ? k - i : i;
+                coefficients[idx] = static_cast<long double>(coeffs[i]);
+            }
         }
 
-        Polynomial(int k, const double* coeffs, bool reverse = false) {
-            this->degree = k;
-            this->coefficients = new long double[k+1];
-            if (reverse) for (int i=0; i<k+1; i++) this->coefficients[k-i] = coeffs[i];
-            else for (int i=0; i<k+1; i++) this->coefficients[i] = coeffs[i];
-        }
+        template <typename T>
+        Polynomial(int k, const std::vector<T>& coeffs, bool reverse = false) {
+            degree = k;
+            coefficients = new long double[k + 1];
 
-        Polynomial(int k, const long double* coeffs, bool reverse = false) {
-            this->degree = k;
-            this->coefficients = new long double[k+1];
-            if (reverse) for (int i=0; i<k+1; i++) this->coefficients[k-i] = coeffs[i];
-            else for (int i=0; i<k+1; i++) this->coefficients[i] = coeffs[i];
+            for (int i = 0; i <= k; i++) {
+                int idx = reverse ? k - i : i;
+                coefficients[idx] = static_cast<long double>(coeffs[i]);
+            }
         }
 
         Polynomial(float coeff) {
