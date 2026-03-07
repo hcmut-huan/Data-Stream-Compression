@@ -24,6 +24,12 @@ def validate(algo):
             exit(Error.MISSING_PARAM.value)
         elif algo["mode"] != "individual" and algo["mode"] != "accumulate":
             exit(Error.INVALID_PARAM.value)
+
+    elif algo["name"] == "swab":
+        if "error" not in algo or "mode" not in algo or "degree" not in algo or "n_segment" not in algo:
+            exit(Error.MISSING_PARAM.value)
+        elif algo["mode"] != "interpolate" and algo["mode"] != "regression":
+            exit(Error.INVALID_PARAM.value)
     
     elif algo["name"] == "optimal-pla":
         if "error" not in algo:
@@ -90,6 +96,8 @@ def parse(conf):
         print("{} {} {} {}".format(algo["name"], algo["error"], algo["w_size"], algo["n_window"]))
     elif algo["name"] == "cached-normal-equation":
         print("{} {} {} {}".format(algo["name"], algo["error"], algo["mode"], algo["degree"]))
+    elif algo["name"] == "swab":
+        print("{} {} {} {} {}".format(algo["name"], algo["error"], algo["mode"], algo["degree"], algo["n_segment"]))
     elif algo["name"] == "optimal-pla":
         print("{} {}".format(algo["name"], algo["error"]))
     elif algo["name"] == "conn-I-pla":
