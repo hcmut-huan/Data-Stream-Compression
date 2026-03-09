@@ -129,6 +129,7 @@ This family partitions a data stream into multiple segments, with each represent
 
 ### Piecewise linear approximation:
 This family partitions a data stream into multiple segments, with each represented by a **linear line**.
+* `swab` : An Online Algorithm for Segmenting Time Series. (Link: https://ieeexplore.ieee.org/document/989531)
 * `swing-filter` : Online Piece-wise Linear Approximation of Numerical Streams with Precision Guarantees. (Link: https://dl.acm.org/doi/abs/10.14778/1687627.1687645)
 * `slide-filter` : Online Piece-wise Linear Approximation of Numerical Streams with Precision Guarantees. (Link: https://dl.acm.org/doi/abs/10.14778/1687627.1687645) 
 * `optimal-pla` : Maximum error-bounded Piecewise Linear Representation for Online Stream Approximation. (Link: https://dl.acm.org/doi/10.1007/s00778-014-0355-0)
@@ -141,7 +142,7 @@ This family partitions a data stream into multiple segments, with each represent
 
 ### Piecewise polynomial approximation:
 This family partitions a data stream into multiple segments, with each represented by a **polynomial of degree k**, where k is a predefined hyperparameter.
-* `swab` : An Online Algorithm for Segmenting Time Series. (Link: https://ieeexplore.ieee.org/document/989531)
+* `poly-swab` : Polynomial of higher degree implementation of SWAB without runtime optimization (which is only effect in linear models).
 * `cached-normal-equation` : Fast Piecewise Polynomial Fitting of Time-Series Data for Streaming Computing. (Link: https://ieeexplore.ieee.org/document/9016024)
 
 ### Model selection:
