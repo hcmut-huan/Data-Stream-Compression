@@ -55,8 +55,8 @@ namespace CachedNormalEquation {
 };
 
 namespace Swab {
-    // Source paper: Fast Piecewise Polynomial Fitting of Time-Series Data for Streaming Computing
-    // Source path: src/piecewise-approximation/polynomial/normal-equation.cpp
+    // Source paper: An Online Algorithm for Segmenting Time Series
+    // Source path: src/piecewise-approximation/polynomial/swab.cpp
     struct Segment {
         std::vector<long double> window;
         std::vector<long double> coeffs;
