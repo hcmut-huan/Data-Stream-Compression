@@ -1,6 +1,6 @@
 #include "piecewise-approximation/polynomial.hpp"
 
-namespace Swab {
+namespace PolySwab {
     Segment::Segment(std::vector<long double> window, std::vector<long double> coeffs) {
         this->window = window;
         this->coeffs = coeffs;

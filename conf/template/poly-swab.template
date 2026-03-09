@@ -4,7 +4,7 @@
     "decompress": "out/decompress/<NAME>_swab.csv",
     "interval": <INTERVAL>,
     "algorithm": {
-        "name": "swab",
+        "name": "poly-swab",
         "error": <ERROR>,
         "mode": <MODE>,
         "degree": <MAX_DEGREE>,

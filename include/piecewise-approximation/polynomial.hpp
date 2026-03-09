@@ -54,9 +54,9 @@ namespace CachedNormalEquation {
     };
 };
 
-namespace Swab {
+namespace PolySwab {
     // Source paper: An Online Algorithm for Segmenting Time Series
-    // Source path: src/piecewise-approximation/polynomial/swab.cpp
+    // Source path: src/piecewise-approximation/polynomial/poly-swab.cpp
     struct Segment {
         std::vector<long double> window;
         std::vector<long double> coeffs;

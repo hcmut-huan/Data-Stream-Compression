@@ -93,9 +93,9 @@ int main(int argc, char** argv) {
         compressor = new AdaptiveApproximation::Compression(COM_OUTPUT);
         decompressor = new AdaptiveApproximation::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 
     }
-    else if (ALGO == "swab") {
-        compressor = new Swab::Compression(COM_OUTPUT);
-        decompressor = new Swab::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 
+    else if (ALGO == "poly-swab") {
+        compressor = new PolySwab::Compression(COM_OUTPUT);
+        decompressor = new PolySwab::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 
     }
     else if (ALGO == "smart-grid-compression") {
         compressor = new SmartGridCompression::Compression(COM_OUTPUT);

@@ -4,10 +4,10 @@
     "decompress": "out/decompress/Fungi_swab.csv",
     "interval": 1,
     "algorithm": {
-        "name": "swab",
+        "name": "poly-swab",
         "error": 4.355,
         "mode": "interpolate",
-        "degree": 1,
+        "degree": 2,
         "n_segment": 6
     }
 }
