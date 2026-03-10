@@ -57,9 +57,7 @@ namespace PolySwab {
             max_error = error > max_error ? error : max_error;
             
             // Immediately terminate when individual error exceed the allowable threshold
-            if (max_error > this->error) {
-                break;
-            }
+            if (max_error > this->error) INFINITY;
         }
 
         return max_error;
@@ -117,14 +115,15 @@ namespace PolySwab {
             this->segments.push_back(Segment(this->window, this->coeffs));
         }
 
-        if (this->segments.size() != 0) {
+        if (this->segments.size() > 1) {
             this->__bottom_up();
-            for (int i=0; i<this->segments.size(); i++) {
-                this->com_seg = &this->segments[i];
-                this->yield();
-            }
-            this->segments.clear();
         }
+
+        for (int i=0; i<this->segments.size(); i++) {
+            this->com_seg = &this->segments[i];
+            this->yield();
+        }
+        this->segments.clear();
     }
 
     void Compression::compress(Univariate* data) {
