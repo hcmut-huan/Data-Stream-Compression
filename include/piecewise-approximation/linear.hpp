@@ -1,6 +1,94 @@
 #include "base-c.hpp"
 #include "base-d.hpp"
 
+namespace Swab {
+    // Source paper: An Online Algorithm for Segmenting Time Series
+    // Source path: src/piecewise-approximation/linear/swab.cpp
+    class Swab {
+        protected:
+            long double __verify(
+                UpperHull& l_cvx, LowerHull& u_cvx,
+                Line& n_line, long double error, int offset=0
+            );
+
+        public:
+            int size = 0;
+            Line* line = nullptr;
+            UpperHull l_cvx;
+            LowerHull u_cvx;
+
+            virtual BinObj* serialize(bool& first) = 0;
+            virtual long double approximate(long double data, long double error) = 0;
+            virtual void merge(Swab* neighbor) = 0;
+            virtual long double merge_cost(Swab* neighbor, long double error) = 0;
+    };
+
+    class InterpolateSegment : public Swab {
+        private:
+            Line __approximate(Point2D* first, Point2D* last, int offset=0);
+
+        public:
+            Point2D* first = nullptr;
+            Point2D* last = nullptr;
+            
+            ~InterpolateSegment();
+            BinObj* serialize(bool& first) override;
+            long double approximate(long double data, long double error) override;
+            void merge(Swab* neighbor) override;
+            long double merge_cost(Swab* neighbor, long double error) override;
+    };
+
+    class RegressionSegment : public Swab {
+        private:
+            Line __approximate(std::vector<long double>& data);
+
+        public:
+            std::vector<long double> window;
+
+            ~RegressionSegment();
+            BinObj* serialize(bool& first) override;
+            long double approximate(long double data, long double error) override;
+            void merge(Swab* neighbor) override;
+            long double merge_cost(Swab* neighbor, long double error) override;
+    };
+
+    class Compression : public BaseCompression {
+        private:
+            int n_segment = 0;
+            long double error = 0;
+            std::string mode = "";
+
+            bool first = true;
+            Swab* segment = nullptr;
+            std::vector<Swab*> segments;
+
+            void __bottom_up();
+
+        protected:
+            void compress(Univariate* data) override;
+            BinObj* serialize() override;
+
+        public:
+            Compression(std::string output) : BaseCompression(output) {}            
+            void initialize(int count, char** params) override;
+            void finalize() override;
+    };
+
+    class Decompression : public BaseDecompression {
+        private:
+            std::string mode = "";
+            long double pivot = INFINITY;
+            
+        protected:
+            CSVObj* decompress(BinObj* compress_data) override;
+        
+        public:
+            Decompression(std::string output, int interval, std::time_t basetime) : BaseDecompression(output, interval, basetime) {} 
+            void initialize(int count, char** params) override;
+            void finalize() override;
+    };
+};
+
 namespace SwingFilter {
     // Source paper: Online Piece-wise Linear Approximation of Numerical Streams with Precision Guarantees
     // Source path: src/piecewise-approximation/linear/swing-filter.cpp

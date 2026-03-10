@@ -1,0 +1,12 @@
+{
+    "data": "data/scientific-research/StarLightCurves.csv",
+    "compress": "out/compress/Fungi_swab.bin",
+    "decompress": "out/decompress/Fungi_swab.csv",
+    "interval": 1,
+    "algorithm": {
+        "name": "swab",
+        "error": 0.407,
+        "mode": "interpolate",
+        "n_segment": 6
+    }
+}

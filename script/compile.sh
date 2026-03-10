@@ -44,8 +44,11 @@ elif [[ $1 == "ioriented-pla" ]]; then
 elif [[ $1 == "cached-normal-equation" ]]; then
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/piecewise-approximation/non-linear/cached-normal-equation.cpp
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/main.cpp
+elif [[ $1 == "poly-swab" ]]; then
+    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/piecewise-approximation/non-linear/poly-swab.cpp
+    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/main.cpp
 elif [[ $1 == "swab" ]]; then
-    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/piecewise-approximation/non-linear/swab.cpp
+    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/piecewise-approximation/linear/swab.cpp
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/main.cpp
 elif [[ $1 == "addaptive-approximation" ]]; then
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/model-selection/adaptive-approximation.cpp

@@ -1,0 +1,12 @@
+{
+    "data": "<DATA>",
+    "compress": "out/compress/<NAME>swab.bin",
+    "decompress": "out/decompress/<NAME>_swab.csv",
+    "interval": <INTERVAL>,
+    "algorithm": {
+        "name": "swab",
+        "error": <ERROR>,
+        "mode": <MODE>,
+        "n_segment": <NUM_SEGMENT>
+    }
+}

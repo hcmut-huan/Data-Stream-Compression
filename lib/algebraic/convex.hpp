@@ -9,6 +9,14 @@ class UpperHull {
         std::vector<Point2D> points;
 
     public:
+        void concat(UpperHull& l_cvx, int offset=0) {
+            for (int i=0; i<l_cvx.size(); i++) {
+                this->points.push_back(
+                    Point2D(l_cvx.at(i).x+offset, l_cvx.at(i).y)
+                );
+            }
+        }
+
         void append(Point2D point) {
             this->points.push_back(point);
 
@@ -79,6 +87,14 @@ class LowerHull {
         std::vector<Point2D> points;
 
     public:
+        void concat(LowerHull& u_cvx, int offset=0) {
+            for (int i=0; i<u_cvx.size(); i++) {
+                this->points.push_back(
+                    Point2D(u_cvx.at(i).x+offset, u_cvx.at(i).y)
+                );
+            }
+        }
+            
         void append(Point2D point) {
             this->points.push_back(point);
 
