@@ -1,7 +1,7 @@
 {
     "data": "data/scientific-research/Fungi.csv",
-    "compress": "out/compress/Fungi_swab.bin",
-    "decompress": "out/decompress/Fungi_swab.csv",
+    "compress": "out/compress/Fungi_poly-swab.bin",
+    "decompress": "out/decompress/Fungi_poly-swab.csv",
     "interval": 1,
     "algorithm": {
         "name": "poly-swab",

@@ -57,11 +57,22 @@ namespace CachedNormalEquation {
 namespace PolySwab {
     // Source paper: An Online Algorithm for Segmenting Time Series
     // Source path: src/piecewise-approximation/polynomial/poly-swab.cpp
-    struct Segment {
-        std::vector<long double> window;
-        std::vector<long double> coeffs;
 
-        Segment(std::vector<long double> window, std::vector<long double> coeffs);
+    class Approximator {
+        private:
+            static std::vector<long double> __interpolate(int degree, std::vector<long double>& data);
+            static std::vector<long double> __regression(int degree, std::vector<long double>& data);
+        
+        public:
+            static Polynomial approximate(std::string mode, int degree, std::vector<long double>& data);
+            static long double cal_error(std::vector<long double>& segment, Polynomial& model);
+    };
+
+    class Grouper {
+        public:
+            static void merge(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode);
+            static long double merge_cost(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode, int degree, long double error);
+            static bool bound_check(std::vector<long double>& segment, Polynomial& model, long double error);
     };
 
     class Compression : public BaseCompression {
@@ -72,23 +83,18 @@ namespace PolySwab {
             std::string mode = "";
 
             bool first = true;
-            Segment* com_seg = nullptr;
-            std::vector<long double> coeffs;
             std::vector<long double> window;
-            std::vector<Segment> segments;
+            std::vector<std::vector<long double>> segments;
 
-            std::vector<long double> __approximate(std::vector<long double> data);
-            long double __verify(std::vector<long double>& segment, std::vector<long double>& coeffs);
-            long double __merge_cost(Segment& s1, Segment& s2);
-            void __merge(Segment& s1, Segment& s2);
             void __bottom_up();
+            bool __sliding_window();
 
         protected:
             void compress(Univariate* data) override;
             BinObj* serialize() override;
 
         public:
-            Compression(std::string output) : BaseCompression(output) {}            
+            Compression(std::string output) : BaseCompression(output) {}
             void initialize(int count, char** params) override;
             void finalize() override;
     };

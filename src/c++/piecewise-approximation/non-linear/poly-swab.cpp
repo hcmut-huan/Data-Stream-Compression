@@ -1,106 +1,126 @@
 #include "piecewise-approximation/polynomial.hpp"
 
 namespace PolySwab {
-    Segment::Segment(std::vector<long double> window, std::vector<long double> coeffs) {
-        this->window = window;
-        this->coeffs = coeffs;
+    std::vector<long double> Approximator::__interpolate(int degree, std::vector<long double>& data) {
+        std::vector<int> indices;
+        // Get evenly spaced indices between starting and ending data points
+        for (int i = 0; i <= degree; i++) {
+            int idx = (long)i * (data.size() - 1) / degree;
+            indices.push_back(idx);
+        }
+
+        Eigen::MatrixXd A(degree+1, degree+1);
+        Eigen::VectorXd b(degree+1);
+        for (int i = 0; i < indices.size(); i++) {
+            b(i) = data[indices[i]];
+            for (int j = 0; j <= degree; j++) {
+                A(i, j) = std::pow(indices[i], j);
+            }
+        }
+        Eigen::VectorXd c = A.colPivHouseholderQr().solve(b);
+
+        return std::vector<long double>(c.data(), c.data() + c.size());
+    }
+
+    std::vector<long double> Approximator::__regression(int degree, std::vector<long double>& data) {
+        Eigen::MatrixXd A(data.size(), degree + 1);
+        Eigen::VectorXd b(data.size());
+        for (int i = 0; i < data.size(); ++i) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+            b(i) = data[i];
+            for (int j = 0; j <= degree; ++j) {
+                A(i, j) = std::pow(i, j);
+            }
+        }
+        Eigen::VectorXd c = (((A.transpose() * A).inverse()) * A.transpose()) * b;
+        
+        return std::vector<long double>(c.data(), c.data() + c.size());
+    }
+
+    Polynomial Approximator::approximate(std::string mode, int degree, std::vector<long double>& data) {
+        std::vector<long double> coeffs;
+
+        if (mode == "regression") 
+            coeffs = Approximator::__regression(degree, data);
+        else if (mode == "interpolate") 
+            coeffs = Approximator::__interpolate(degree, data);
+    
+        return Polynomial(degree, coeffs);
+    }
+
+    // Verify new line satisfies infinity bound or not
+    bool Grouper::bound_check(std::vector<long double>& segment, Polynomial& model, long double error) {
+
+        for (int i=0; i<segment.size(); i++) {
+            // Immediately terminate when individual error exceed the allowable threshold
+            if (std::abs(segment[i]-model.subs(i)) > error) return false;
+        }
+
+        return true;
+    }
+
+    // Mean square error calculate
+    long double Approximator::cal_error(std::vector<long double>& segment, Polynomial& model) {
+        long double error = 0;
+        for (int i=0; i<segment.size(); i++) {
+            error += std::pow(segment[i]-model.subs(i), 2);
+        }
+
+        return error / segment.size();
+    }
+
+    void Grouper::merge(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode) {
+        int offset = mode == "interpolate" ? 1 : 0;
+        s1.insert(s1.end(), s2.begin() + offset, s2.end());
+    }
+
+    long double Grouper::merge_cost(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode, int degree, long double error) {
+        int offset = mode == "interpolate" ? 1 : 0;
+        std::vector<long double> s = s1;
+        s.insert(s.end(), s2.begin() + offset, s2.end());
+        Polynomial model = Approximator::approximate(mode, degree, s);
+
+        if (!Grouper::bound_check(s, model, error)) return INFINITY;
+        else return Approximator::cal_error(s, model);
     }
 
     // Begin: compression
-    std::vector<long double> Compression::__approximate(std::vector<long double> data) {
-        std::vector<long double> coeffs;
-        if (this->mode == "interpolate") {
-            std::vector<int> indices;
-            // Get evenly spaced indices between starting and ending data points
-            for (int i = 0; i <= this->degree; i++) {
-                int idx = (long)i * (data.size() - 1) / this->degree;
-                indices.push_back(idx);
-            }
-
-            Eigen::MatrixXd A(this->degree+1, this->degree+1);
-            Eigen::VectorXd b(this->degree+1);
-
-            for (int i = 0; i < indices.size(); i++) {
-                b(i) = data[indices[i]];
-                for (int j = 0; j <= this->degree; j++) {
-                    A(i, j) = std::pow(indices[i], j);
-                }
-            }
-
-            Eigen::VectorXd c = A.colPivHouseholderQr().solve(b);
-            for (int i=0; i<=this->degree; i++) coeffs.push_back(c(i));
-        }
-        else if (this->mode == "regression") {
-            Eigen::MatrixXd A(data.size(), this->degree + 1);
-            Eigen::VectorXd b(data.size());
-
-            for (int i = 0; i < data.size(); ++i) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-                b(i) = data[i];
-                for (int j = 0; j <= this->degree; ++j) {
-                    A(i, j) = std::pow(i, j);
-                }
-            }
-            
-            Eigen::VectorXd c = (((A.transpose() * A).inverse()) * A.transpose()) * b;
-            for (int i=0; i<=this->degree; i++) coeffs.push_back(c(i));
-        }        
-
-        return coeffs;
-    }
-
-    long double Compression::__verify(std::vector<long double>& segment, std::vector<long double>& coeffs) {
-        long double max_error = 0;
-        Polynomial poly(this->degree, coeffs);
-        // Check that the approximated model satisfies the max error constraint
-        for (int i=0; i<segment.size(); i++) {
-            long double error = std::abs(segment[i]-poly.subs(i));
-            max_error = error > max_error ? error : max_error;
-            
-            // Immediately terminate when individual error exceed the allowable threshold
-            if (max_error > this->error) INFINITY;
-        }
-
-        return max_error;
-    }
-
-    long double Compression::__merge_cost(Segment& s1, Segment& s2) {
-        int s1_len = s1.window.size();
-        std::vector<long double> s = s1.window;
-
-        auto start = this->mode == "interpolate" ? s2.window.begin() + 1 : s2.window.begin();
-        s.insert(s.end(), start, s2.window.end());
-        // merge cost is related to the maximum individual error
-        std::vector<long double> coeffs = this->__approximate(s);
-        long double error = this->__verify(s, coeffs);
-
-        return error;
-    }
-
-    void Compression::__merge(Segment& s1, Segment& s2) {
-        int s1_len = s1.window.size();
-        auto start = this->mode == "interpolate" ? s2.window.begin() + 1 : s2.window.begin();
-        s1.window.insert(s1.window.end(), start, s2.window.end());
-        s1.coeffs = this->__approximate(s1.window);
-    }
-
     void Compression::__bottom_up() {
         std::vector<long double> m_err;
         for (int i=0; i<this->n_segment-1; i++) {
-            m_err.push_back(this->__merge_cost(this->segments[i], this->segments[i+1]));
+            m_err.push_back(Grouper::merge_cost(
+                this->segments[i], this->segments[i+1], 
+                this->mode, this->degree, this->error
+            ));
         }
 
         auto it = std::min_element(m_err.begin(), m_err.end());
-        while (*it <= this->error && this->segments.size() > 1) {
+        while (*it != INFINITY && this->segments.size() > 1) {
             int index = std::distance(m_err.begin(), it);
-            this->__merge(this->segments[index], this->segments[index+1]);
+            Grouper::merge(this->segments[index], this->segments[index+1], this->mode);
 
             m_err.erase(m_err.begin() + index);
             this->segments.erase(this->segments.begin() + index + 1);
             
-            if (index != 0) m_err[index-1] = this->__merge_cost(this->segments[index-1], this->segments[index]);
-            if (index < m_err.size()) m_err[index] = this->__merge_cost(this->segments[index], this->segments[index+1]);
+            if (index != 0) {
+                m_err[index-1] = Grouper::merge_cost(
+                    this->segments[index-1], this->segments[index],
+                    this->mode, this->degree, this->error
+                );
+            }
+            if (index < m_err.size()) {
+                m_err[index] = Grouper::merge_cost(
+                    this->segments[index], this->segments[index+1],
+                    this->mode, this->degree, this->error
+                );
+            }
+            
             it = std::min_element(m_err.begin(), m_err.end());  
         }
+    }
+
+    bool Compression::__sliding_window() {
+        Polynomial model = Approximator::approximate(this->mode, this->degree, this->window);
+        return Grouper::bound_check(this->window, model, this->error);
     }
 
     void Compression::initialize(int count, char** params) {
@@ -112,34 +132,23 @@ namespace PolySwab {
 
     void Compression::finalize() {
         if (this->window.size() >= this->degree + 1) {
-            this->segments.push_back(Segment(this->window, this->coeffs));
+            this->segments.push_back(this->window);
         }
 
-        if (this->segments.size() > 1) {
-            this->__bottom_up();
-        }
-
-        for (int i=0; i<this->segments.size(); i++) {
-            this->com_seg = &this->segments[i];
+        this->__bottom_up();
+        while (this->segments.size() != 0) {
             this->yield();
+            this->segments.erase(this->segments.begin());
         }
-        this->segments.clear();
     }
 
     void Compression::compress(Univariate* data) {
         this->window.push_back(data->get_value());
 
-        if (this->window.size() == this->degree + 1) {
-            this->coeffs = this->__approximate(this->window);
-        }
-        else if (this->window.size() > this->degree + 1) {
-            std::vector<long double> n_coeffs = this->__approximate(this->window);
-            if (this->__verify(this->window, n_coeffs) <= this->error) {
-                this->coeffs = n_coeffs;
-            }
-            else {
+        if (this->window.size() > this->degree + 1) {
+            if (!this->__sliding_window()) {
                 this->window.pop_back();
-                this->segments.push_back(Segment(this->window, this->coeffs));
+                this->segments.push_back(this->window);
                 
                 if (this->mode == "interpolate") {
                     // Add last data point of previous segment to ensure connectivity
@@ -147,44 +156,42 @@ namespace PolySwab {
                     this->window.clear();
                     this->window.push_back(tail);
                     this->window.push_back(data->get_value());
-
-                    if (this->window.size() == this->degree + 1) {
-                        this->coeffs = this->__approximate(this->window);
-                    }
                 }
                 else if (this->mode == "regression") {
                     this->window.clear();
                     this->window.push_back(data->get_value());
                 }
             }
-            // Perform bottom up once n_segment sliding window segments have accumulated
-            if (this->segments.size() == this->n_segment) {
-                this->__bottom_up();
-                this->com_seg = &this->segments[0];
-                this->yield();
-                this->com_seg = nullptr;
-                this->segments.erase(this->segments.begin());
-            }
+        }
+
+        // Perform bottom up once n_segment sliding window segments have accumulated
+        if (this->segments.size() == this->n_segment) {
+            this->__bottom_up();
+            this->yield();
+            this->segments.erase(this->segments.begin());
         }
     }
 
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
+        std::vector<long double> segment = this->segments[0];
+        Polynomial model = Approximator::approximate(this->mode, this->degree, segment);
+
         if (this->mode == "interpolate") {
             if (this->first) {
-                obj->put((float) this->com_seg->coeffs[0]);
+                obj->put((float) model.coefficients[0]);
                 this->first = false;
             }
             
-            obj->put(VariableByteEncoding::encode(this->com_seg->window.size()));
+            obj->put(VariableByteEncoding::encode(segment.size()));
             for (int i = 1; i <= this->degree; i++) {
-                obj->put((float) this->com_seg->coeffs[i]);
+                obj->put((float) model.coefficients[i]);
             }
         }
         else if (this->mode == "regression") {
-            obj->put(VariableByteEncoding::encode(this->com_seg->window.size()));
+            obj->put(VariableByteEncoding::encode(segment.size()));
             for (int i = 0; i <= this->degree; i++) {
-                obj->put((float) this->com_seg->coeffs[i]);
+                obj->put((float) model.coefficients[i]);
             }
         }
         
