@@ -47,6 +47,16 @@ namespace PolySwab {
         return Polynomial(degree, coeffs);
     }
 
+    // Mean square error calculate
+    long double Approximator::cal_error(std::vector<long double>& segment, Polynomial& model) {
+        long double error = 0;
+        for (int i=0; i<segment.size(); i++) {
+            error += std::pow(segment[i]-model.subs(i), 2);
+        }
+
+        return error / segment.size();
+    }
+
     // Verify new line satisfies infinity bound or not
     bool Grouper::bound_check(std::vector<long double>& segment, Polynomial& model, long double error) {
 
@@ -56,16 +66,6 @@ namespace PolySwab {
         }
 
         return true;
-    }
-
-    // Mean square error calculate
-    long double Approximator::cal_error(std::vector<long double>& segment, Polynomial& model) {
-        long double error = 0;
-        for (int i=0; i<segment.size(); i++) {
-            error += std::pow(segment[i]-model.subs(i), 2);
-        }
-
-        return error / segment.size();
     }
 
     void Grouper::merge(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode) {
