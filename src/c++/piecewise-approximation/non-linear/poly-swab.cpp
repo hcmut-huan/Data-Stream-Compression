@@ -86,7 +86,7 @@ namespace PolySwab {
     // Begin: compression
     void Compression::__bottom_up() {
         std::vector<long double> m_err;
-        for (int i=0; i<this->n_segment-1; i++) {
+        for (int i=0; i<this->segments.size()-1; i++) {
             m_err.push_back(Grouper::merge_cost(
                 this->segments[i], this->segments[i+1], 
                 this->mode, this->degree, this->error
@@ -213,74 +213,58 @@ namespace PolySwab {
         CSVObj* base_obj = nullptr;
         CSVObj* prev_obj = nullptr;
 
+        int start = 0;
+        unsigned long length = 0;
+        Polynomial* model = nullptr;
+        float* coefficients = new float[this->degree+1];
+        int offset = this->mode == "interpolate" ? 1 : 0;
+
         if (this->mode == "interpolate") {
-            int start = 1;
+            start = 1;
             if (this->pivot == INFINITY) {
                 start = 0;
                 this->pivot = compress_data->getFloat();
             }
 
-            unsigned long length = VariableByteEncoding::decode(compress_data);
-            float* coefficients = new float[this->degree+1];
+            length = VariableByteEncoding::decode(compress_data);
             for (int i = 1; i <= this->degree; i++) {
                 coefficients[i] = compress_data->getFloat();
             }
             coefficients[0] = this->pivot;
-            Polynomial model(this->degree, coefficients);
-
-            for (int i=start; i<length; i++) {
-                if (base_obj == nullptr) {
-                    base_obj = new CSVObj;
-                    base_obj->pushData(std::to_string(this->basetime + i * this->interval));
-                    base_obj->pushData(std::to_string(model.subs(i)));
-
-                    prev_obj = base_obj;
-                }
-                else {
-                    CSVObj* obj = new CSVObj;
-                    obj->pushData(std::to_string(this->basetime + i * this->interval));
-                    obj->pushData(std::to_string(model.subs(i)));
-
-                    prev_obj->setNext(obj);
-                    prev_obj = obj;
-                }
-            }
-
-            delete[] coefficients;
-            this->basetime += (length - 1) * this->interval;
-            this->pivot = model.subs(length-1);
+            model = new Polynomial(this->degree, coefficients);            
         }
         else if (this->mode == "regression") {
-            unsigned long length = VariableByteEncoding::decode(compress_data);
-            float* coefficients = new float[this->degree+1];
+            length = VariableByteEncoding::decode(compress_data);
             for (int i = 0; i <= this->degree; i++) {
                 coefficients[i] = compress_data->getFloat();
             }
-            Polynomial model(this->degree, coefficients);
-
-            for (int i=0; i<length; i++) {
-                if (base_obj == nullptr) {
-                    base_obj = new CSVObj;
-                    base_obj->pushData(std::to_string(this->basetime + i * this->interval));
-                    base_obj->pushData(std::to_string(model.subs(i)));
-
-                    prev_obj = base_obj;
-                }
-                else {
-                    CSVObj* obj = new CSVObj;
-                    obj->pushData(std::to_string(this->basetime + i * this->interval));
-                    obj->pushData(std::to_string(model.subs(i)));
-
-                    prev_obj->setNext(obj);
-                    prev_obj = obj;
-                }
-            }
-
-            delete[] coefficients;
-            this->basetime += length * this->interval;
+            model = new Polynomial(this->degree, coefficients);
         }
 
+        for (int i=start; i<length; i++) {
+            if (base_obj == nullptr) {
+                base_obj = new CSVObj;
+                base_obj->pushData(std::to_string(this->basetime + i * this->interval));
+                base_obj->pushData(std::to_string(model->subs(i)));
+
+                prev_obj = base_obj;
+            }
+            else {
+                CSVObj* obj = new CSVObj;
+                obj->pushData(std::to_string(this->basetime + i * this->interval));
+                obj->pushData(std::to_string(model->subs(i)));
+
+                prev_obj->setNext(obj);
+                prev_obj = obj;
+            }
+        }
         
+        this->pivot = model->subs(length-1);
+        this->basetime += (length - offset) * this->interval;
+
+        delete model;
+        delete[] coefficients;
+
         return base_obj;
     }
     // End: decompression
