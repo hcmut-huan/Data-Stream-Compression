@@ -1,6 +1,6 @@
 {
     "data": "<DATA>",
-    "compress": "out/compress/<NAME>swab.bin",
+    "compress": "out/compress/<NAME>_swab.bin",
     "decompress": "out/decompress/<NAME>_swab.csv",
     "interval": <INTERVAL>,
     "algorithm": {
