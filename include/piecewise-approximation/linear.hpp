@@ -4,52 +4,30 @@
 namespace Swab {
     // Source paper: An Online Algorithm for Segmenting Time Series
     // Source path: src/piecewise-approximation/linear/swab.cpp
-    class Swab {
-        protected:
-            long double __verify(
-                UpperHull& l_cvx, LowerHull& u_cvx,
-                Line& n_line, long double error, int offset=0
-            );
 
-        public:
-            int size = 0;
-            Line* line = nullptr;
-            UpperHull l_cvx;
-            LowerHull u_cvx;
+    struct Segment {
+        std::vector<long double> data;
+        UpperHull l_cvx;
+        LowerHull u_cvx;
 
-            virtual BinObj* serialize(bool& first) = 0;
-            virtual long double approximate(long double data, long double error) = 0;
-            virtual void merge(Swab* neighbor) = 0;
-            virtual long double merge_cost(Swab* neighbor, long double error) = 0;
+        Segment(std::vector<long double>& data, UpperHull& l_cvx, LowerHull& u_cvx);
     };
 
-    class InterpolateSegment : public Swab {
+    class Approximator {
         private:
-            Line __approximate(Point2D* first, Point2D* last, int offset=0);
-
+            static Line __interpolate(std::vector<long double>& data);
+            static Line __regression(std::vector<long double>& data);
+        
         public:
-            Point2D* first = nullptr;
-            Point2D* last = nullptr;
-            
-            ~InterpolateSegment();
-            BinObj* serialize(bool& first) override;
-            long double approximate(long double data, long double error) override;
-            void merge(Swab* neighbor) override;
-            long double merge_cost(Swab* neighbor, long double error) override;
+            static Line approximate(std::string mode, std::vector<long double>& data);
+            static long double cal_error(std::vector<long double>& data, Line& line);
     };
 
-    class RegressionSegment : public Swab {
-        private:
-            Line __approximate(std::vector<long double>& data);
-
+    class Grouper {
         public:
-            std::vector<long double> window;
-
-            ~RegressionSegment();
-            BinObj* serialize(bool& first) override;
-            long double approximate(long double data, long double error) override;
-            void merge(Swab* neighbor) override;
-            long double merge_cost(Swab* neighbor, long double error) override;
+            static void merge(Segment& s1, Segment& s2, std::string mode);
+            static long double merge_cost(Segment& s1, Segment& s2, std::string mode);
+            static bool bound_check(Segment& segment, Line& line, int offset=0);
     };
 
     class Compression : public BaseCompression {
@@ -59,10 +37,13 @@ namespace Swab {
             std::string mode = "";
 
             bool first = true;
-            Swab* segment = nullptr;
-            std::vector<Swab*> segments;
+            UpperHull l_cvx;
+            LowerHull u_cvx;
+            std::vector<long double> window;
+            std::vector<Segment> segments;
 
             void __bottom_up();
+            bool __sliding_window();
 
         protected:
             void compress(Univariate* data) override;
