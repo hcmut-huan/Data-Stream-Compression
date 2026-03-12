@@ -142,7 +142,7 @@ This family partitions a data stream into multiple segments, with each represent
 
 ### Piecewise polynomial approximation:
 This family partitions a data stream into multiple segments, with each represented by a **polynomial of degree k**, where k is a predefined hyperparameter.
-* `poly-swab` : Polynomial of higher degree implementation of SWAB without runtime optimization (which is only effect in linear models).
+* `poly-swab` : Implementation of SWAB for polynomial of arbitrary degree without runtime optimization as in linear SWAB (since convex hull search space is only correct when applied to linear models).
 * `cached-normal-equation` : Fast Piecewise Polynomial Fitting of Time-Series Data for Streaming Computing. (Link: https://ieeexplore.ieee.org/document/9016024)
 
 ### Model selection:
