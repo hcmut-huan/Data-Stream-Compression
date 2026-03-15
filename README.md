@@ -111,7 +111,7 @@ Statistical output of each execution is appended to the ``experiments.csv`` file
 | ``max_e`` | Maximum error of the reconstructed data. |
 | ``min_e`` | Minimum error of the reconstructed data. |
 | ``correlation`` | Peason correlation of the reconstructed data. |
-| ``ssim`` | Structural similarity index measure of the reconstructed data (default window size = 1000). |
+| ``ssim`` | Structural similarity index measure of the reconstructed data (default window = 1000). |
 | ``max_vsz`` | Maximum virtual memory size (VSZ) used during execution (MB). |
 | ``max_rss`` | Maximum resident set size (RSS) used during execution (MB). |
 | ``c_time`` | Average compression time per data point (ns). |
