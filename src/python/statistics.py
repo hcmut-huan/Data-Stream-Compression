@@ -64,7 +64,29 @@ def mindiff(origin_data, approx_data):
       
 def compressratio(origin, approx):
     return os.path.getsize(origin) / os.path.getsize(approx)
-    
+
+def pearsoncorr(origin, approx):
+    return np.corrcoef(origin, approx)[0, 1]
+
+def ssim(origin, approx, win_size=1000, K1=0.01, K2=0.03):
+    data_range = origin.max() - origin.min()
+
+    C1 = (K1 * data_range) ** 2
+    C2 = (K2 * data_range) ** 2
+
+    w = np.ones(win_size) / win_size
+    mu_x = np.convolve(origin, w, mode="valid")
+    mu_y = np.convolve(approx, w, mode="valid")
+
+    sigma_x2 = np.convolve(origin*origin, w, mode="valid") - mu_x**2
+    sigma_y2 = np.convolve(approx*approx, w, mode="valid") - mu_y**2
+    sigma_xy = np.convolve(origin*approx, w, mode="valid") - mu_x*mu_y
+
+    numerator = (2 * mu_x * mu_y + C1) * (2 * sigma_xy + C2)
+    denominator = (mu_x**2 + mu_y**2 + C1) * (sigma_x2 + sigma_y2 + C2)
+    ssim_map = numerator / denominator
+
+    return ssim_map.mean()
 
 if __name__ == "__main__":
     DATA = sys.argv[1]
@@ -87,5 +109,7 @@ if __name__ == "__main__":
     print("PSNR:", psnr(origin_data, approx_data))
     print("Max_E:", maxdiff(origin_data, approx_data))
     print("Min_E:", mindiff(origin_data, approx_data))
+    print("Correlation:", pearsoncorr(origin_data, approx_data))
+    print("SSIM:", ssim(origin_data, approx_data))
     print("max_vsz:", max_vsz/1024/1024)
     print("max_rss:", max_rss/1024/1024)

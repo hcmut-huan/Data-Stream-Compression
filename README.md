@@ -99,9 +99,9 @@ Statistical output of each execution is appended to the ``experiments.csv`` file
 
 | Column | Description |
 |:-------------|:-----------|
-| ``Dataset`` | Dataset used during execution. |
-| ``Algorithm`` | Algorithm used for compression and decompression. |
-| ``Error`` | Maximum allowable individual error threshold. |
+| ``dataset`` | Dataset used during execution. |
+| ``algorithm`` | Algorithm used for compression and decompression. |
+| ``error bound`` | Maximum allowable individual error threshold. |
 | ``Compression ratio`` | Ratio of original data size to compressed data size. |
 | ``mse`` | Mean squared error of the reconstructed data. |
 | ``rmse`` | Root mean squared error of the reconstructed data. |
@@ -110,6 +110,8 @@ Statistical output of each execution is appended to the ``experiments.csv`` file
 | ``psnr`` | Peak signal-to-noise ratio of the reconstructed data. |
 | ``max_e`` | Maximum error of the reconstructed data. |
 | ``min_e`` | Minimum error of the reconstructed data. |
+| ``correlation`` | Peason correlation of the reconstructed data. |
+| ``ssim`` | Structural similarity index measure of the reconstructed data (default window size = 1000). |
 | ``max_vsz`` | Maximum virtual memory size (VSZ) used during execution (MB). |
 | ``max_rss`` | Maximum resident set size (RSS) used during execution (MB). |
 | ``c_time`` | Average compression time per data point (ns). |
