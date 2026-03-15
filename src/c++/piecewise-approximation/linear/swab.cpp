@@ -7,28 +7,40 @@ namespace Swab {
         this->l_cvx = l_cvx;
     }
 
-    Line Approximator::__interpolate(std::vector<long double>& data) {
+    Line Approximator::interpolate(std::vector<long double>& data) {
         Point2D first(0, data.front());
         Point2D last(data.size()-1, data.back());
 
         return Line::line(first, last);
     }
 
-    Line Approximator::__regression(std::vector<long double>& data) {
-        Eigen::MatrixXd A(data.size(), 2);
-        Eigen::VectorXd b(data.size());
-        for (int i = 0; i < data.size(); ++i) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-            b(i) = data[i];
-            A(i, 0) = 1; A(i, 1) = i;
-        }
-        Eigen::VectorXd c = (((A.transpose() * A).inverse()) * A.transpose()) * b;
-        
-        return Line(c(1), c(0));
+    Line Approximator::regression(int size, long double acc, long double avg_x, long double avg_y, long square) {
+        long double variance = (long double) square / size - avg_x * avg_x;
+        long double covariance = (long double) acc / size - avg_x * avg_y;
+        long double slope = covariance / variance;
+        long double intercept = avg_y - slope * avg_x;
+
+        return Line(slope, intercept);
     }
 
-    Line Approximator::approximate(std::string mode, std::vector<long double>& data) {
-        if (mode == "regression")  return Approximator::__regression(data);
-        else return Approximator::__interpolate(data);
+    Line Approximator::regression(std::vector<long double>& data) {
+        long double avg_x = 0;
+        long double avg_y = 0;
+        long double acc = 0;
+        int square = 0;
+
+        for (int i=0; i<data.size(); i++) {
+            avg_x += i; avg_y += data[i];
+            acc += i * data[i]; square += i * i;
+        }
+        avg_x /= data.size(); avg_y /= data.size();
+
+        long double variance = (long double) square / data.size() - avg_x * avg_x;
+        long double covariance = (long double) acc / data.size() - avg_x * avg_y;
+        long double slope = covariance / variance;
+        long double intercept = avg_y - slope * avg_x;
+
+        return Line(slope, intercept);
     }
 
     // Mean square error calculate
@@ -71,7 +83,8 @@ namespace Swab {
         int offset = mode == "interpolate" ? 1 : 0;
         std::vector<long double> s = s1.data;
         s.insert(s.end(), s2.data.begin() + offset, s2.data.end());
-        Line line = Approximator::approximate(mode, s);
+        Line line = mode == "interpolate" ?
+            Approximator::interpolate(s) : Approximator::regression(s);
     
         if (!Grouper::bound_check(s1, line)) return INFINITY;
         else if (!Grouper::bound_check(s2, line, s1.data.size()-offset)) return INFINITY;
@@ -81,11 +94,35 @@ namespace Swab {
     // Begin: compression
     bool Compression::__sliding_window() {
         Point2D p(this->window.size()-1, this->window.back());
-        Line line = Approximator::approximate(this->mode, this->window);
-        Segment segment(this->window, this->l_cvx, this->u_cvx);
 
-        return Grouper::bound_check(segment, line) && 
-            std::abs(line.subs(p.x) - p.y) <= this->error;
+        if (this->mode == "interpolate") {
+            if (this->window.size() > 2) {
+                Segment segment(this->window, this->l_cvx, this->u_cvx);
+                Line line = Approximator::interpolate(this->window);
+                
+                return Grouper::bound_check(segment, line) && 
+                    std::abs(line.subs(p.x) - p.y) <= this->error;
+            }
+        }
+        else if (this->mode == "regression") {
+            this->accumulate += p.x*p.y;
+            this->accumulate_square += p.x*p.x;
+            this->average_x = (this->average_x * (this->window.size() - 1) + p.x) / this->window.size();
+            this->average_y = (this->average_y * (this->window.size() - 1) + p.y) / this->window.size();
+            
+            if (this->window.size() > 2) {
+                Segment segment(this->window, this->l_cvx, this->u_cvx);
+                Line line = Approximator::regression(
+                    this->window.size(), this->accumulate, this->average_x, 
+                    this->average_y, this->accumulate_square
+                );
+
+                return Grouper::bound_check(segment, line) && 
+                    std::abs(line.subs(p.x) - p.y) <= this->error;
+            }
+        }
+        
+        return true;
     }
 
     void Compression::__bottom_up() {
@@ -141,32 +178,35 @@ namespace Swab {
 
     void Compression::compress(Univariate* data) {
         this->window.push_back(data->get_value());
+        
+        if (!this->__sliding_window()) {
+            this->window.pop_back();
+            this->segments.push_back(Segment(
+                this->window, this->l_cvx, this->u_cvx
+            ));
+            
+            if (this->mode == "interpolate") {
+                // Add last data point of previous segment to ensure connectivity
+                long double tail = this->window.back();
+                this->window.clear();
+                this->window.push_back(tail);
+                this->window.push_back(data->get_value());
 
-        if (this->window.size() > 2) {
-            if (!this->__sliding_window()) {
-                this->window.pop_back();
-                this->segments.push_back(Segment(
-                    this->window, this->l_cvx, this->u_cvx
-                ));
-                
-                if (this->mode == "interpolate") {
-                    // Add last data point of previous segment to ensure connectivity
-                    long double tail = this->window.back();
-                    this->window.clear();
-                    this->window.push_back(tail);
-                    this->window.push_back(data->get_value());
+                this->l_cvx.clear();
+                this->l_cvx.append(Point2D(0, tail - this->error));
+                this->u_cvx.clear();
+                this->u_cvx.append(Point2D(0, tail + this->error));
+            }
+            else if (this->mode == "regression") {
+                this->window.clear();
+                this->window.push_back(data->get_value());
+                this->l_cvx.clear();
+                this->u_cvx.clear();
 
-                    this->l_cvx.clear();
-                    this->l_cvx.append(Point2D(0, tail - this->error));
-                    this->u_cvx.clear();
-                    this->u_cvx.append(Point2D(0, tail + this->error));
-                }
-                else if (this->mode == "regression") {
-                    this->window.clear();
-                    this->window.push_back(data->get_value());
-                    this->l_cvx.clear();
-                    this->u_cvx.clear();
-                }
+                this->average_x = 0;
+                this->average_y = data->get_value();
+                this->accumulate = 0;
+                this->accumulate_square = 0;
             }
         }
 
@@ -195,7 +235,7 @@ namespace Swab {
             obj->put((float) segment.data.back());
         }
         else if (this->mode == "regression") {
-            Line line = Approximator::approximate(this->mode, segment.data);
+            Line line = Approximator::regression(segment.data);
             obj->put(VariableByteEncoding::encode(segment.data.size()));
             obj->put((float) line.get_intercept());
             obj->put((float) line.get_slope());

@@ -14,12 +14,10 @@ namespace Swab {
     };
 
     class Approximator {
-        private:
-            static Line __interpolate(std::vector<long double>& data);
-            static Line __regression(std::vector<long double>& data);
-        
         public:
-            static Line approximate(std::string mode, std::vector<long double>& data);
+            static Line interpolate(std::vector<long double>& data);
+            static Line regression(int size, long double acc, long double avg_x, long double avg_y, long square);
+            static Line regression(std::vector<long double>& data);
             static long double cal_error(std::vector<long double>& data, Line& line);
     };
 
@@ -41,6 +39,12 @@ namespace Swab {
             LowerHull u_cvx;
             std::vector<long double> window;
             std::vector<Segment> segments;
+            
+            // Parameters for incremental swab-regression
+            long double accumulate = 0;
+            long double average_x = 0;
+            long double average_y = 0;
+            long accumulate_square = 0;
 
             void __bottom_up();
             bool __sliding_window();
