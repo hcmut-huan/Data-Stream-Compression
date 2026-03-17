@@ -50,11 +50,11 @@ def mse(origin_data, approx_data):
 def mae(origin_data, approx_data):
     return np.abs(origin_data - approx_data).mean()
 
-def snr(origin_data, approx_data):
-    return 10 * np.log10(np.mean(origin_data ** 2) / mse(origin_data, approx_data))
+def snr(origin_data, approx_data, eps=1e-10):
+    return 10 * np.log10(np.mean(origin_data ** 2) / (mse(origin_data, approx_data) + eps))
 
-def psnr(origin_data, approx_data):
-    return 10 * np.log10((np.max(origin_data) ** 2) / mse(origin_data, approx_data))
+def psnr(origin_data, approx_data, eps=1e-10):
+    return 10 * np.log10((np.max(origin_data) ** 2) / (mse(origin_data, approx_data) + eps))
 
 def maxdiff(origin_data, approx_data):
     return np.max(np.abs(origin_data - approx_data))
