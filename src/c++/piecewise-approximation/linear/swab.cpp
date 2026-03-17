@@ -27,7 +27,7 @@ namespace Swab {
         long double avg_x = 0;
         long double avg_y = 0;
         long double acc = 0;
-        int square = 0;
+        long square = 0;
 
         for (int i=0; i<data.size(); i++) {
             avg_x += i; avg_y += data[i];
@@ -116,7 +116,7 @@ namespace Swab {
                     this->window.size(), this->accumulate, this->average_x, 
                     this->average_y, this->accumulate_square
                 );
-
+                
                 return Grouper::bound_check(segment, line) && 
                     std::abs(line.subs(p.x) - p.y) <= this->error;
             }
