@@ -1,4 +1,4 @@
-#include "piecewise-approximation/non-linear.hpp"
+#include "piecewise-approximation/polynomial.hpp"
 
 namespace CachedNormalEquation {
 
@@ -15,45 +15,45 @@ namespace CachedNormalEquation {
     // Begin: compression
     // Using eigen library
     Polynomial* Compression::__calPolynomial() {
-            int N = this->window.size();
-            int n = this->degree;
-            Eigen::VectorXd theta;
+        int N = this->window.size();
+        int n = this->degree;
+        Eigen::VectorXd theta;
 
-            if (this->cache.find(this->window.size()) == this->cache.end()) {
-                Eigen::MatrixXd X(N, n + 1);
-                Eigen::VectorXd y(N);
+        if (this->cache.find(this->window.size()) == this->cache.end()) {
+            Eigen::MatrixXd X(N, n + 1);
+            Eigen::VectorXd y(N);
 
-                for (int i = 0; i < N; i++) {
-                    for (int k=0; k<n+1; k++) {
-                        X(i, k) = pow(i, k);
-                    } 
-                    y(i) = this->window[i].y;
-                }
-
-                Eigen::MatrixXd X_T_X_inv_X_T = (X.transpose() * X).inverse() * X.transpose();
-                this->cache.insert({window.size(), X_T_X_inv_X_T});
-
-                theta = X_T_X_inv_X_T * y;
-            }
-            else {
-                Eigen::VectorXd y(N);
-                for (int i=0; i<N; i++) {
-                    y(i) = this->window[i].y;
-                }
-
-                Eigen::MatrixXd X_T_X_inv_X_T = this->cache.find(this->window.size())->second;
-                theta = X_T_X_inv_X_T * y;
-            }
-            
-            float* coeffs = new float[n+1];
-            for (int i = 0; i < n+1; ++i) {
-                coeffs[i] = theta[i];
+            for (int i = 0; i < N; i++) {
+                for (int k=0; k<n+1; k++) {
+                    X(i, k) = pow(i, k);
+                } 
+                y(i) = this->window[i].y;
             }
 
-            Polynomial* model = new Polynomial(degree, coeffs);
-            
-            delete coeffs;
-            return model;
+            Eigen::MatrixXd X_T_X_inv_X_T = (X.transpose() * X).inverse() * X.transpose();
+            this->cache.insert({window.size(), X_T_X_inv_X_T});
+
+            theta = X_T_X_inv_X_T * y;
+        }
+        else {
+            Eigen::VectorXd y(N);
+            for (int i=0; i<N; i++) {
+                y(i) = this->window[i].y;
+            }
+
+            Eigen::MatrixXd X_T_X_inv_X_T = this->cache.find(this->window.size())->second;
+            theta = X_T_X_inv_X_T * y;
+        }
+        
+        float* coeffs = new float[n+1];
+        for (int i = 0; i < n+1; ++i) {
+            coeffs[i] = theta[i];
+        }
+
+        Polynomial* model = new Polynomial(degree, coeffs);
+        
+        delete coeffs;
+        return model;
     }
 
     bool Compression::__approxSuccess(Model* model) {
