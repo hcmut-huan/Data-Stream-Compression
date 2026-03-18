@@ -1,4 +1,4 @@
-#include "piecewise-approximation/polynomial.hpp"
+#include "piecewise-approximation/non-linear.hpp"
 
 namespace PolySwab {
     std::vector<long double> Approximator::__interpolate(int degree, std::vector<long double>& data) {

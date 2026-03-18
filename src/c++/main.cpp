@@ -1,6 +1,6 @@
 #include "piecewise-approximation/constant.hpp"
 #include "piecewise-approximation/linear.hpp"
-#include "piecewise-approximation/polynomial.hpp"
+#include "piecewise-approximation/non-linear.hpp"
 #include "model-selection/model-selection.hpp"
 
 using namespace std;

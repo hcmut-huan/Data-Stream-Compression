@@ -1,4 +1,4 @@
-#include "piecewise-approximation/polynomial.hpp"
+#include "piecewise-approximation/non-linear.hpp"
 
 namespace CachedNormalEquation {
 
