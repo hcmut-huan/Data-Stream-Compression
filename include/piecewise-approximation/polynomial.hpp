@@ -4,7 +4,7 @@
 
 namespace CachedNormalEquation {
     // Source paper: Fast Piecewise Polynomial Fitting of Time-Series Data for Streaming Computing
-    // Source path: src/piecewise-approximation/non-linear/normal-equation.cpp
+    // Source path: src/piecewise-approximation/polynomial/normal-equation.cpp
     
     struct Model {
         int length = 0;
@@ -55,7 +55,7 @@ namespace CachedNormalEquation {
 
 namespace PolySwab {
     // Source paper: An Online Algorithm for Segmenting Time Series
-    // Source path: src/piecewise-approximation/non-linear/poly-swab.cpp
+    // Source path: src/piecewise-approximation/polynomial/poly-swab.cpp
 
     class Approximator {
         private:

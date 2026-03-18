@@ -1,4 +1,4 @@
-#include "piecewise-approximation/non-linear.hpp"
+#include "piecewise-approximation/polynomial.hpp"
 
 namespace PolySwab {
     std::vector<long double> Approximator::__interpolate(int degree, std::vector<long double>& data) {
@@ -19,6 +19,8 @@ namespace PolySwab {
         }
         Eigen::VectorXd c = A.colPivHouseholderQr().solve(b);
 
+        std::cout << "approx: " << data.size() << " -> " << c(0) << " " << c(1) << " " << c(2) << " -> ";
+
         return std::vector<long double>(c.data(), c.data() + c.size());
     }
 
@@ -32,6 +34,8 @@ namespace PolySwab {
             }
         }
         Eigen::VectorXd c = (((A.transpose() * A).inverse()) * A.transpose()) * b;
+
+        std::cout << "approx: " << data.size() << " -> " << c(0) << " " << c(1) << " " << c(2) << " -> ";
         
         return std::vector<long double>(c.data(), c.data() + c.size());
     }
@@ -85,42 +89,44 @@ namespace PolySwab {
 
     // Begin: compression
     void Compression::__bottom_up() {
-        std::vector<long double> m_err;
-        for (int i=0; i<this->segments.size()-1; i++) {
-            m_err.push_back(Grouper::merge_cost(
-                this->segments[i], this->segments[i+1], 
-                this->mode, this->degree, this->error
-            ));
-        }
+        // std::vector<long double> m_err;
+        // for (int i=0; i<this->segments.size()-1; i++) {
+        //     m_err.push_back(Grouper::merge_cost(
+        //         this->segments[i], this->segments[i+1], 
+        //         this->mode, this->degree, this->error
+        //     ));
+        // }
 
-        auto it = std::min_element(m_err.begin(), m_err.end());
-        while (*it != INFINITY && this->segments.size() > 1) {
-            int index = std::distance(m_err.begin(), it);
-            Grouper::merge(this->segments[index], this->segments[index+1], this->mode);
+        // auto it = std::min_element(m_err.begin(), m_err.end());
+        // while (*it != INFINITY && this->segments.size() > 1) {
+        //     int index = std::distance(m_err.begin(), it);
+        //     Grouper::merge(this->segments[index], this->segments[index+1], this->mode);
 
-            m_err.erase(m_err.begin() + index);
-            this->segments.erase(this->segments.begin() + index + 1);
+        //     m_err.erase(m_err.begin() + index);
+        //     this->segments.erase(this->segments.begin() + index + 1);
             
-            if (index != 0) {
-                m_err[index-1] = Grouper::merge_cost(
-                    this->segments[index-1], this->segments[index],
-                    this->mode, this->degree, this->error
-                );
-            }
-            if (index < m_err.size()) {
-                m_err[index] = Grouper::merge_cost(
-                    this->segments[index], this->segments[index+1],
-                    this->mode, this->degree, this->error
-                );
-            }
+        //     if (index != 0) {
+        //         m_err[index-1] = Grouper::merge_cost(
+        //             this->segments[index-1], this->segments[index],
+        //             this->mode, this->degree, this->error
+        //         );
+        //     }
+        //     if (index < m_err.size()) {
+        //         m_err[index] = Grouper::merge_cost(
+        //             this->segments[index], this->segments[index+1],
+        //             this->mode, this->degree, this->error
+        //         );
+        //     }
             
-            it = std::min_element(m_err.begin(), m_err.end());  
-        }
+        //     it = std::min_element(m_err.begin(), m_err.end());  
+        // }
     }
 
     bool Compression::__sliding_window() {
         Polynomial model = Approximator::approximate(this->mode, this->degree, this->window);
-        return Grouper::bound_check(this->window, model, this->error);
+        bool flag = Grouper::bound_check(this->window, model, this->error);
+        std::cout << flag << "\n";
+        return flag;
     }
 
     void Compression::initialize(int count, char** params) {
@@ -240,6 +246,8 @@ namespace PolySwab {
             }
             model = new Polynomial(this->degree, coefficients);
         }
+
+        std::cout << "decompress: " << length << " " << model->str() << "\n";
 
         for (int i=start; i<length; i++) {
             if (base_obj == nullptr) {
