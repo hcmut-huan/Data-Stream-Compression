@@ -25,7 +25,8 @@ namespace Swab {
         public:
             static void merge(Segment& s1, Segment& s2, std::string mode);
             static long double merge_cost(Segment& s1, Segment& s2, std::string mode);
-            static bool bound_check(Segment& segment, Line& line, int offset=0);
+            static bool bound_check(UpperHull& l_cvx, LowerHull& u_cvx, Line& line, int offset=0);
+
     };
 
     class Compression : public BaseCompression {

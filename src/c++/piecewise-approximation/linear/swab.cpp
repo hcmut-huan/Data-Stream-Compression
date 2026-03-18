@@ -27,11 +27,13 @@ namespace Swab {
         long double avg_x = 0;
         long double avg_y = 0;
         long double acc = 0;
-        long square = 0;
+        unsigned long square = 0;
 
-        for (int i=0; i<data.size(); i++) {
-            avg_x += i; avg_y += data[i];
-            acc += i * data[i]; square += i * i;
+        for (unsigned long i = 0; i < data.size(); i++) {
+            avg_x += (long double)i;
+            avg_y += (long double)data[i];
+            acc += (long double)i * data[i];
+            square += i * i;
         }
         avg_x /= data.size(); avg_y /= data.size();
 
@@ -54,10 +56,7 @@ namespace Swab {
     }
 
     // Verify new line satisfies infinity bound or not
-    bool Grouper::bound_check(Segment& segment, Line& line, int offset) {
-        UpperHull& l_cvx = segment.l_cvx;
-        LowerHull& u_cvx = segment.u_cvx;
-        
+    bool Grouper::bound_check(UpperHull& l_cvx, LowerHull& u_cvx, Line& line, int offset) {
         // Immediately terminate when individual error exceed the allowable threshold
         for (int i=0; i<l_cvx.size(); i++) {
             Point2D p = l_cvx.at(i);
@@ -86,8 +85,8 @@ namespace Swab {
         Line line = mode == "interpolate" ?
             Approximator::interpolate(s) : Approximator::regression(s);
     
-        if (!Grouper::bound_check(s1, line)) return INFINITY;
-        else if (!Grouper::bound_check(s2, line, s1.data.size()-offset)) return INFINITY;
+        if (!Grouper::bound_check(s1.l_cvx, s1.u_cvx, line)) return INFINITY;
+        else if (!Grouper::bound_check(s2.l_cvx, s2.u_cvx, line, s1.data.size()-offset)) return INFINITY;
         else return Approximator::cal_error(s, line);
     }
 
@@ -97,10 +96,9 @@ namespace Swab {
 
         if (this->mode == "interpolate") {
             if (this->window.size() > 2) {
-                Segment segment(this->window, this->l_cvx, this->u_cvx);
                 Line line = Approximator::interpolate(this->window);
                 
-                return Grouper::bound_check(segment, line) && 
+                return Grouper::bound_check(this->l_cvx, this->u_cvx, line) && 
                     std::abs(line.subs(p.x) - p.y) <= this->error;
             }
         }
@@ -111,13 +109,12 @@ namespace Swab {
             this->average_y = (this->average_y * (this->window.size() - 1) + p.y) / this->window.size();
             
             if (this->window.size() > 2) {
-                Segment segment(this->window, this->l_cvx, this->u_cvx);
                 Line line = Approximator::regression(
                     this->window.size(), this->accumulate, this->average_x, 
                     this->average_y, this->accumulate_square
                 );
                 
-                return Grouper::bound_check(segment, line) && 
+                return Grouper::bound_check(this->l_cvx, this->u_cvx, line) && 
                     std::abs(line.subs(p.x) - p.y) <= this->error;
             }
         }
