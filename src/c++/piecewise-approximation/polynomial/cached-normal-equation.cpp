@@ -15,29 +15,26 @@ namespace CachedNormalEquation {
     // Begin: compression
     // Using eigen library
     Polynomial* Compression::__calPolynomial() {
-        int N = this->window.size();
-        int n = this->degree;
         Eigen::VectorXd theta;
-
         if (this->cache.find(this->window.size()) == this->cache.end()) {
-            Eigen::MatrixXd X(N, n + 1);
-            Eigen::VectorXd y(N);
+            Eigen::MatrixXd X(this->window.size(), this->degree + 1);
+            Eigen::VectorXd y(this->window.size());
 
-            for (int i = 0; i < N; i++) {
-                for (int k=0; k<n+1; k++) {
-                    X(i, k) = pow(i, k);
+            for (int i = 0; i < this->window.size(); i++) {
+                for (int k=0; k<=this->degree; k++) {
+                    X(i, k) = std::pow(i, k);
                 } 
                 y(i) = this->window[i].y;
             }
 
             Eigen::MatrixXd X_T_X_inv_X_T = (X.transpose() * X).inverse() * X.transpose();
-            this->cache.insert({window.size(), X_T_X_inv_X_T});
+            this->cache.insert({this->window.size(), X_T_X_inv_X_T});
 
             theta = X_T_X_inv_X_T * y;
         }
         else {
-            Eigen::VectorXd y(N);
-            for (int i=0; i<N; i++) {
+            Eigen::VectorXd y(this->window.size());
+            for (int i=0; i<this->window.size(); i++) {
                 y(i) = this->window[i].y;
             }
 
@@ -45,8 +42,8 @@ namespace CachedNormalEquation {
             theta = X_T_X_inv_X_T * y;
         }
         
-        float* coeffs = new float[n+1];
-        for (int i = 0; i < n+1; ++i) {
+        float* coeffs = new float[this->degree+1];
+        for (int i = 0; i <= this->degree; ++i) {
             coeffs[i] = theta[i];
         }
 
@@ -134,7 +131,7 @@ namespace CachedNormalEquation {
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
         
-        obj->put((short) this->model->length);
+        obj->put(VariableByteEncoding::encode(this->model->length));
         for (int i = 0; i <= this->degree; i++) {
             obj->put((float) this->model->function->coefficients[i]);
         }
@@ -156,7 +153,7 @@ namespace CachedNormalEquation {
         CSVObj* base_obj = nullptr;
         CSVObj* prev_obj = nullptr;
 
-        unsigned short length = compress_data->getShort();
+        unsigned long length = VariableByteEncoding::decode(compress_data);
         float* coefficients = new float[this->degree+1];
 
         for (int i = 0; i <= this->degree; i++) {

@@ -152,7 +152,7 @@ namespace HybridPCA {
 
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
-        obj->put((short) this->length);
+        obj->put(VariableByteEncoding::encode(this->length));
         obj->put((float) this->value);
 
         return obj;
@@ -172,7 +172,7 @@ namespace HybridPCA {
         CSVObj* base_obj = nullptr;
         CSVObj* prev_obj = nullptr;
 
-        unsigned short length = compress_data->getShort();
+        unsigned long length = VariableByteEncoding::decode(compress_data);
         float value = compress_data->getFloat();
 
         for (int i=0; i<length; i++) {

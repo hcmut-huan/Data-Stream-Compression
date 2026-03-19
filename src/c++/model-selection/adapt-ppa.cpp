@@ -57,8 +57,7 @@ namespace AdaptPPA {
         }
         else {
             if (this->l_line->subs(p.x) - p.y - error > 0.0000001 
-                || p.y - error - this->u_line->subs(p.x) > 0.0000001
-                || p.x - this->p_start->x > 16000) 
+                || p.y - error - this->u_line->subs(p.x) > 0.0000001) 
             {
                 this->p_end = new Point2D(p.x - 1, p.y);
                 this->is_complete = true;
@@ -111,8 +110,6 @@ namespace AdaptPPA {
 
     // Begin: compression
     bool Compression::__merge_check() {
-        if (this->window.size() > 16000) return false;
-
         bool flag = true;
         Line line_1 = this->seg_1->getLine();
         Line line_2 = this->seg_2->getLine();        
@@ -239,8 +236,7 @@ namespace AdaptPPA {
             Line line = this->seg_1->getLine();
             int embedded = this->seg_1->getLength() << 2 | 1;
 
-            // obj->put(VariableByteEncoding::encode(embedded));
-            obj->put((short) embedded);
+            obj->put(VariableByteEncoding::encode(embedded));
             obj->put((float) line.get_intercept());
             obj->put((float) line.get_slope());
         }
@@ -249,8 +245,7 @@ namespace AdaptPPA {
             int embedded = (this->window.size() - pivot) << 2 | this->degree;
             long double* coeffs = this->__approximate(pivot);
             
-            obj->put((short) embedded);
-            // obj->put(VariableByteEncoding::encode(embedded));
+            obj->put(VariableByteEncoding::encode(embedded));
             for (int i = 0; i <= this->degree; i++) {
                 obj->put((float) coeffs[i]);
             }
@@ -325,8 +320,7 @@ namespace AdaptPPA {
         CSVObj* base_obj = nullptr;
         CSVObj* prev_obj = nullptr;
 
-        unsigned short embedded = compress_data->getShort();
-        // long embedded = VariableByteEncoding::decode(compress_data);
+        long embedded = VariableByteEncoding::decode(compress_data);
         int degree = (embedded & 3);
         int length = embedded >> 2;
 

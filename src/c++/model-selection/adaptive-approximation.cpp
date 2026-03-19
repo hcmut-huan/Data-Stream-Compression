@@ -38,7 +38,6 @@ namespace AdaptiveApproximation {
     }
     
     bool ExpoFunction::approximate(long double bound, long double data) {
-        if (this->length > 16000) return false;
         Point2D p(this->length, data);
 
         if (this->pivot == nullptr) {
@@ -74,7 +73,6 @@ namespace AdaptiveApproximation {
     }
     
     bool LinearFunction::approximate(long double bound, long double data) {
-        if (this->length > 16000) return false;
         Point2D p(this->length, data);
 
         if (this->pivot == nullptr) {
@@ -112,7 +110,6 @@ namespace AdaptiveApproximation {
     }
 
     bool PolyFunction::approximate(long double bound, long double data) {
-        if (this->length > 16000) return false;
         Point2D p(this->length, data);
 
         if (this->pivot == nullptr) {
@@ -218,8 +215,7 @@ namespace AdaptiveApproximation {
                 else if (model->getType() == "quadratic") embedded |= 2;
                 else if (model->getType() == "cubic") embedded |= 3;
                 
-                obj->put((short) embedded);
-                // obj->put(VariableByteEncoding::encode(embedded));
+                obj->put(VariableByteEncoding::encode(embedded));
                 for (int i = 0; i < model->getDim(); i++) {
                     obj->put((float) coeffs[i]);
                 }
@@ -318,8 +314,7 @@ namespace AdaptiveApproximation {
             this->pivot = compress_data->getFloat();
         }
 
-        unsigned short embedded = compress_data->getShort();
-        // long embedded = VariableByteEncoding::decode(compress_data);
+        long embedded = VariableByteEncoding::decode(compress_data);
         int type = (embedded & 3);
         int length = embedded >> 2;
 

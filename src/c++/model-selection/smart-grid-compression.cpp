@@ -36,7 +36,7 @@ namespace SmartGridCompression {
                 this->min = this->min < p.y ? this->min : p.y;
                 this->max = this->max > p.y ? this->max : p.y;
                 
-                if (this->max - this->min <= 2 * bound && this->length <= 16000) {
+                if (this->max - this->min <= 2 * bound) {
                     this->value = (this->max + this->min) / 2;
                     this->length++;
                 }
@@ -52,7 +52,7 @@ namespace SmartGridCompression {
             this->min = this->min < p.y ? min : p.y;
             this->max = this->max > p.y ? max : p.y;
             
-            if (max - min <= 2 * bound && this->length <= 16000) {
+            if (max - min <= 2 * bound) {
                 this->value = (max + min) / 2;
                 this->length++;
                 return true;
@@ -184,7 +184,7 @@ namespace SmartGridCompression {
                 this->cvx.append(p);
                 if (this->cvx.size() > 1) {
                     Line line = this->__approx(segment);
-                    if (this->__verify(bound, line) && this->length <= 16000) {
+                    if (this->__verify(bound, line)) {
                         if (this->line != nullptr) delete this->line;
                         this->line = new Line(line.get_slope(), line.get_intercept());
                     }
@@ -202,7 +202,7 @@ namespace SmartGridCompression {
 
             if (this->cvx.size() > 1) {            
                 Line line = this->__approx(segment);
-                if (this->__verify(bound, line) && this->length <= 16000) {
+                if (this->__verify(bound, line)) {
                     if (this->line != nullptr) delete this->line;
                     this->line = new Line(line.get_slope(), line.get_intercept());
                 }
@@ -240,8 +240,6 @@ namespace SmartGridCompression {
     }
 
     bool PolynomialModel::approximate(long double bound, std::vector<Point2D>& segment) {
-        if (segment.size() > 16000) return false;
-
         if (this->polynomial != nullptr) {
             Eigen::VectorXd x(this->degree + 2);                    // decision variables
             Eigen::VectorXd c(this->degree + 2);                    // objective coefficients
@@ -401,21 +399,18 @@ namespace SmartGridCompression {
         int embedded = model->length << 2 | model->degree;
 
         if (model->degree == 0) {
-            obj->put((short) embedded);
-            // obj->put(VariableByteEncoding::encode(embedded));
+            obj->put(VariableByteEncoding::encode(embedded));
             obj->put((float) ((ConstantModel*) model)->getValue());
         }
         else if (model->degree == 1) {
             Line* line = ((LinearModel*) model)->getLine();
-            obj->put((short) embedded);
-            // obj->put(VariableByteEncoding::encode(embedded));
+            obj->put(VariableByteEncoding::encode(embedded));
             obj->put((float) line->get_intercept());
             obj->put((float) line->get_slope());
         }
         else {
             Polynomial* polynomial = ((PolynomialModel*) model)->getPolynomial();
-            obj->put((short) embedded);
-            // obj->put(VariableByteEncoding::encode(embedded));
+            obj->put(VariableByteEncoding::encode(embedded));
             for (int i = 0; i <= polynomial->degree; i++) {
                 obj->put((float) polynomial->coefficients[i]);
             }
@@ -467,8 +462,7 @@ namespace SmartGridCompression {
         CSVObj* base_obj = nullptr;
         CSVObj* prev_obj = nullptr;
 
-        unsigned short embedded = compress_data->getShort();
-        // long embedded = VariableByteEncoding::decode(compress_data);
+        long embedded = VariableByteEncoding::decode(compress_data);
         int degree = (embedded & 3);
         int length = embedded >> 2;
 

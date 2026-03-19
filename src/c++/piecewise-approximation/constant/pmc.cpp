@@ -61,7 +61,7 @@ namespace PMC {
 
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
-        obj->put((short)(this->curr_end - this->prev_end));
+        obj->put(VariableByteEncoding::encode(this->curr_end - this->prev_end));
         obj->put((float) this->value);
 
         return obj;
@@ -81,7 +81,7 @@ namespace PMC {
         CSVObj* base_obj = nullptr;
         CSVObj* prev_obj = nullptr;
 
-        unsigned short length = compress_data->getShort();
+        unsigned long length = VariableByteEncoding::decode(compress_data);
         float value = compress_data->getFloat();
 
         for (int i=this->index + 1; i<=this->index + length; i++) {

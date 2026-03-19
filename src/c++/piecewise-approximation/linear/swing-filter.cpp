@@ -34,7 +34,6 @@ namespace SwingFilter {
         long delta = this->curr_end->x - this->prev_end->x;
         
         obj->put(VariableByteEncoding::encode(delta));
-        // obj->put((int) delta);
         obj->put((float) this->curr_end->y);
 
         return obj;
