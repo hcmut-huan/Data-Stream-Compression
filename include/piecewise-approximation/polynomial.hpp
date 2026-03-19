@@ -71,7 +71,7 @@ namespace PolySwab {
         public:
             static void merge(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode);
             static long double merge_cost(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode, int degree, long double error);
-            static bool bound_check(std::vector<long double>& segment, Polynomial& model, long double error);
+            static bool bound_check(std::vector<long double>& segment, Polynomial& model, long double error, bool skip=false);
     };
 
     class Compression : public BaseCompression {

@@ -60,12 +60,18 @@ namespace PolySwab {
     }
 
     // Verify new line satisfies infinity bound or not
-    bool Grouper::bound_check(std::vector<long double>& segment, Polynomial& model, long double error) {
-        for (int i=0; i<segment.size(); i++) {
-            // Immediately terminate when individual error exceed the allowable threshold
-            if (std::abs(segment[i]-model.subs(i)) > error) return false;
+    bool Grouper::bound_check(std::vector<long double>& segment, Polynomial& model, long double error, bool skip) {
+        if (skip) {
+            Point2D p(segment.size()-1, segment.back());
+            return std::abs(p.y-model.subs(p.x)) <= error;
         }
-        return true;
+        else {
+            for (int i=0; i<segment.size(); i++) {
+                // Immediately terminate when individual error exceed the allowable threshold
+                if (std::abs(segment[i]-model.subs(i)) > error) return false;
+            }
+            return true;
+        }
     }
 
     void Grouper::merge(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode) {
@@ -129,7 +135,7 @@ namespace PolySwab {
         }
         else if (this->mode == "regression") {
             Polynomial& model = this->models.back();
-            if (Grouper::bound_check(this->window, model, this->error)) return true;
+            if (Grouper::bound_check(this->window, model, this->error, true)) return true;
         }
 
         Polynomial n_model = Approximator::approximate(this->mode, this->degree, this->window);
