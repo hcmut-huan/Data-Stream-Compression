@@ -61,12 +61,10 @@ namespace PolySwab {
 
     // Verify new line satisfies infinity bound or not
     bool Grouper::bound_check(std::vector<long double>& segment, Polynomial& model, long double error) {
-
         for (int i=0; i<segment.size(); i++) {
             // Immediately terminate when individual error exceed the allowable threshold
             if (std::abs(segment[i]-model.subs(i)) > error) return false;
         }
-
         return true;
     }
 
@@ -102,7 +100,11 @@ namespace PolySwab {
 
             m_err.erase(m_err.begin() + index);
             this->segments.erase(this->segments.begin() + index + 1);
-            
+
+            this->models.erase(this->models.begin() + index + 1);
+            Polynomial n_model = Approximator::approximate(this->mode, this->degree, this->segments[index]);
+            this->models[index] = n_model;
+
             if (index != 0) {
                 m_err[index-1] = Grouper::merge_cost(
                     this->segments[index-1], this->segments[index],
@@ -121,8 +123,20 @@ namespace PolySwab {
     }
 
     bool Compression::__sliding_window() {
-        Polynomial model = Approximator::approximate(this->mode, this->degree, this->window);
-        return Grouper::bound_check(this->window, model, this->error);
+        if (this->models.size() == this->segments.size()) {
+            Polynomial model = Approximator::approximate(this->mode, this->degree, this->window);
+            this->models.push_back(model);
+        }
+        else if (this->mode == "regression") {
+            Polynomial& model = this->models.back();
+            if (Grouper::bound_check(this->window, model, this->error)) return true;
+        }
+
+        Polynomial n_model = Approximator::approximate(this->mode, this->degree, this->window);
+        if (!Grouper::bound_check(this->window, n_model, this->error)) return false;
+        
+        this->models[this->models.size()-1] = n_model;
+        return true;
     }
 
     void Compression::initialize(int count, char** params) {
@@ -140,6 +154,7 @@ namespace PolySwab {
         this->__bottom_up();
         while (this->segments.size() != 0) {
             this->yield();
+            this->models.erase(this->models.begin());
             this->segments.erase(this->segments.begin());
         }
     }
@@ -147,7 +162,7 @@ namespace PolySwab {
     void Compression::compress(Univariate* data) {
         this->window.push_back(data->get_value());
 
-        if (this->window.size() > this->degree + 1) {
+        if (this->window.size() > this->degree) {
             if (!this->__sliding_window()) {
                 this->window.pop_back();
                 this->segments.push_back(this->window);
@@ -158,6 +173,10 @@ namespace PolySwab {
                     this->window.clear();
                     this->window.push_back(tail);
                     this->window.push_back(data->get_value());
+
+                    if (this->window.size() == this->degree + 1) {
+                        this->__sliding_window();
+                    }
                 }
                 else if (this->mode == "regression") {
                     this->window.clear();
@@ -170,14 +189,15 @@ namespace PolySwab {
         if (this->segments.size() == this->n_segment) {
             this->__bottom_up();
             this->yield();
+            this->models.erase(this->models.begin());
             this->segments.erase(this->segments.begin());
         }
     }
 
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
-        std::vector<long double> segment = this->segments[0];
-        Polynomial model = Approximator::approximate(this->mode, this->degree, segment);
+        std::vector<long double>& segment = this->segments[0];
+        Polynomial& model = this->models[0];
 
         if (this->mode == "interpolate") {
             if (this->first) {

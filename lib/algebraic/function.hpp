@@ -85,45 +85,39 @@ class Line {
 class Polynomial {
     public:
         int degree;
-        long double* coefficients;    // coefficient degree starts from 0 
+        std::vector<long double> coefficients;    // coefficient degree starts from 0 
 
     public:
         template <typename T>
         Polynomial(int k, const T* coeffs, bool reverse = false) {
             degree = k;
-            coefficients = new long double[k + 1];
+            this->coefficients.resize(k + 1);
 
             for (int i = 0; i <= k; i++) {
                 int idx = reverse ? k - i : i;
-                coefficients[idx] = static_cast<long double>(coeffs[i]);
+                this->coefficients[idx] = static_cast<long double>(coeffs[i]);
             }
         }
 
         template <typename T>
         Polynomial(int k, const std::vector<T>& coeffs, bool reverse = false) {
             degree = k;
-            coefficients = new long double[k + 1];
+            this->coefficients.resize(k + 1);
 
             for (int i = 0; i <= k; i++) {
                 int idx = reverse ? k - i : i;
-                coefficients[idx] = static_cast<long double>(coeffs[i]);
+                this->coefficients[idx] = static_cast<long double>(coeffs[i]);
             }
         }
 
         Polynomial(float coeff) {
             this->degree = 0;
-            this->coefficients = new long double[1];
-            this->coefficients[0] = (long double) coeff;
+            this->coefficients.push_back((long double) coeff);
         }
 
         Polynomial(long double coeff) {
             this->degree = 0;
-            this->coefficients = new long double[1];
-            this->coefficients[0] = coeff;
-        }
-
-        ~Polynomial() {
-            delete[] this->coefficients;
+            this->coefficients.push_back(coeff);
         }
 
         long double subs(long double indeterminate) const {

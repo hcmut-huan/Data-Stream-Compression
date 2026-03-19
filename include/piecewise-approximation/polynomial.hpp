@@ -83,6 +83,7 @@ namespace PolySwab {
 
             bool first = true;
             std::vector<long double> window;
+            std::vector<Polynomial> models; 
             std::vector<std::vector<long double>> segments;
 
             void __bottom_up();
