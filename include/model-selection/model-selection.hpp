@@ -2,8 +2,8 @@
 #include "base-d.hpp"
 
 namespace AdaptiveApproximation {
-    // Source paper: A time-series compression technique and its application to the smart grid
-    // Source path: src/model-selection/ada.cpp
+    // Source paper: An Adaptive Algorithm for Online Time Series Segmentation with Error Bound Guarantee
+    // Source path: src/model-selection/adaptive-approximation.cpp
     class Model {
         protected:
             int length = 0;
@@ -195,6 +195,7 @@ namespace SmartGridCompression {
 };
 
 namespace AdaptPPA {
+    // Source paper: Shape-Aware Compression of Streaming Data: An Online Dynamic Polynomial Selection Approach
     // Source path: src/model-selection/adapt-ppa.cpp
     class LinearSegment {
         private:
