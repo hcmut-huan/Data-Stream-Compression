@@ -292,7 +292,6 @@ namespace IOrientedPLA {
 
     // Begin: decompression
     void Decompression::initialize(int count, char** params) {
-        // Do nothing
         this->scale = atof(params[1]);
         this->upshift = atof(params[2]);
         this->downshift = atof(params[3]);
