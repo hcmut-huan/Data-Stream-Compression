@@ -259,11 +259,10 @@ namespace IOrientedPLA {
                         if (line.get_slope() < min_slp) {
                             min_slp = line.get_slope();
                             index = i;
-
-                            delete this->u_line;
-                            this->u_line = new Line(line.get_slope(), line.get_intercept());
                         }
                     }
+                    Line line = Line::line(this->u_cvx.at(index), Point2D(p.x, p.y + this->error));
+                    delete this->u_line; this->u_line = new Line(line.get_slope(), line.get_intercept());
                     this->u_cvx.erase_from_begin(index);
                 }
                 if (update_l) {
@@ -275,11 +274,10 @@ namespace IOrientedPLA {
                         if (line.get_slope() > max_slp) {
                             max_slp = line.get_slope();
                             index = i;
-
-                            delete this->l_line;
-                            this->l_line = new Line(line.get_slope(), line.get_intercept());
                         }
                     }
+                    Line line = Line::line(this->l_cvx.at(index), Point2D(p.x, p.y - this->error));
+                    delete this->l_line; this->l_line = new Line(line.get_slope(), line.get_intercept());
                     this->l_cvx.erase_from_begin(index);
                 }
 
