@@ -700,7 +700,7 @@ class SDLP
             // Eigen::VectorXi next(m_new);
             // Eigen::VectorXi prev(m_new);
             next.conservativeResize(m_new);
-            prev.conservativeResize(m_new);
+            prev.conservativeResize(m_new + 1);
             /* randomize the input planes */
             rand_permutation(m_new - 1, perm.data());
             /* previous to 0 is actually never used */
@@ -760,7 +760,7 @@ class SDLP
             // Eigen::VectorXi next(m);
             // Eigen::VectorXi prev(m);
             next.resize(m);
-            prev.resize(m);
+            prev.resize(m + 1);
             Eigen::VectorXd n_vec(d + 1);
             Eigen::VectorXd d_vec(d + 1);
             
