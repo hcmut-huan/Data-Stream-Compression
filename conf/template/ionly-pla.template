@@ -1,0 +1,10 @@
+{
+    "data": "<DATA>",
+    "compress": "out/compress/<NAME>_ionly-pla.bin",
+    "decompress": "out/decompress/<NAME>_ionly-pla.csv",
+    "interval": <INTERVAL>,
+    "algorithm": {
+        "name": "ionly-pla",
+        "error": <ERROR>
+    }
+}

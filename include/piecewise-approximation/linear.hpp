@@ -38,6 +38,7 @@ namespace Swab {
             bool first = true;
             UpperHull l_cvx;
             LowerHull u_cvx;
+            std::vector<long double> m_err;
             std::vector<long double> window;
             std::vector<Segment> segments;
             
@@ -348,6 +349,43 @@ namespace IOrientedPLA {
             long double upshift = 0;
             long double downshift = 0;
 
+        protected:
+            CSVObj* decompress(BinObj* compress_data) override;
+
+        public:
+            Decompression(std::string output, int interval, std::time_t basetime) : BaseDecompression(output, interval, basetime) {}
+            void initialize(int count, char** params) override;
+            void finalize() override;
+    };
+};
+
+namespace IOnlyPLA {
+    // Source path: src/piecewise-approximation/linear/ionly-pla.cpp
+    class Compression : public BaseCompression {
+        private:
+            int length = 0;
+            long double error = 0;
+
+            Point2D* pivot = nullptr;
+            Line* u_line = nullptr;
+            Line* l_line = nullptr;
+            UpperHull u_cvx;
+            LowerHull l_cvx;
+
+            SDLP sdlp;
+            Eigen::VectorXd __feasible_rectangle();
+
+        protected:
+            void compress(Univariate* data) override;
+            BinObj* serialize() override;
+
+        public:
+            Compression(std::string output) : BaseCompression(output) {}      
+            void initialize(int count, char** params) override;
+            void finalize() override;
+    };
+
+    class Decompression : public BaseDecompression {
         protected:
             CSVObj* decompress(BinObj* compress_data) override;
 

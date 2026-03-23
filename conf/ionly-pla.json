@@ -1,0 +1,10 @@
+{
+    "data": "data/Fungi.csv",
+    "compress": "out/compress/Fungi_ionly-pla.bin",
+    "decompress": "out/decompress/Fungi_ionly-pla.csv",
+    "interval": 1,
+    "algorithm": {
+        "name": "ionly-pla",
+        "error": 4.355
+    }
+}

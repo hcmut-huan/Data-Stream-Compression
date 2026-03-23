@@ -41,6 +41,9 @@ elif [[ $1 == "mix-piece" ]]; then
 elif [[ $1 == "ioriented-pla" ]]; then
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/piecewise-approximation/linear/ioriented-pla.cpp
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/main.cpp
+elif [[ $1 == "ionly-pla" ]]; then
+    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/piecewise-approximation/linear/ionly-pla.cpp
+    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/main.cpp
 elif [[ $1 == "cached-normal-equation" ]]; then
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/piecewise-approximation/polynomial/cached-normal-equation.cpp
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++11 -c "$WORK_DIR"/src/c++/main.cpp

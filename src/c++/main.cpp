@@ -73,6 +73,10 @@ int main(int argc, char** argv) {
         compressor = new IOrientedPLA::Compression(COM_OUTPUT);
         decompressor = new IOrientedPLA::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 
     }
+    else if (ALGO == "ionly-pla") {
+        compressor = new IOnlyPLA::Compression(COM_OUTPUT);
+        decompressor = new IOnlyPLA::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 
+    }
     else if (ALGO == "semi-optimal-pla") {
         compressor = new SemiOptimalPLA::Compression(COM_OUTPUT);
         decompressor = new SemiOptimalPLA::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 

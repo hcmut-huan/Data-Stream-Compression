@@ -91,20 +91,19 @@ namespace PolySwab {
 
     // Begin: compression
     void Compression::__bottom_up() {
-        std::vector<long double> m_err;
-        for (int i=0; i<this->segments.size()-1; i++) {
-            m_err.push_back(Grouper::merge_cost(
+        for (int i=this->m_err.size(); i<this->segments.size()-1; i++) {
+            this->m_err.push_back(Grouper::merge_cost(
                 this->segments[i], this->segments[i+1], 
                 this->mode, this->degree, this->error
             ));
         }
 
-        auto it = std::min_element(m_err.begin(), m_err.end());
+        auto it = std::min_element(this->m_err.begin(), this->m_err.end());
         while (*it != INFINITY && this->segments.size() > 1) {
-            int index = std::distance(m_err.begin(), it);
+            int index = std::distance(this->m_err.begin(), it);
             Grouper::merge(this->segments[index], this->segments[index+1], this->mode);
 
-            m_err.erase(m_err.begin() + index);
+            this->m_err.erase(this->m_err.begin() + index);
             this->segments.erase(this->segments.begin() + index + 1);
 
             this->models.erase(this->models.begin() + index + 1);
@@ -112,19 +111,19 @@ namespace PolySwab {
             this->models[index] = n_model;
 
             if (index != 0) {
-                m_err[index-1] = Grouper::merge_cost(
+                this->m_err[index-1] = Grouper::merge_cost(
                     this->segments[index-1], this->segments[index],
                     this->mode, this->degree, this->error
                 );
             }
-            if (index < m_err.size()) {
-                m_err[index] = Grouper::merge_cost(
+            if (index < this->m_err.size()) {
+                this->m_err[index] = Grouper::merge_cost(
                     this->segments[index], this->segments[index+1],
                     this->mode, this->degree, this->error
                 );
             }
             
-            it = std::min_element(m_err.begin(), m_err.end());  
+            it = std::min_element(this->m_err.begin(), this->m_err.end());  
         }
     }
 
@@ -163,6 +162,7 @@ namespace PolySwab {
             this->models.erase(this->models.begin());
             this->segments.erase(this->segments.begin());
         }
+        this->m_err.clear();
     }
 
     void Compression::compress(Univariate* data) {
@@ -197,6 +197,7 @@ namespace PolySwab {
             this->yield();
             this->models.erase(this->models.begin());
             this->segments.erase(this->segments.begin());
+            if (!this->m_err.empty()) this->m_err.erase(this->m_err.begin());
         }
     }
 
