@@ -4,3 +4,4 @@ script/evaluate.sh
 data/
 out/
 out/experiments.csv
+conf/
