@@ -7,6 +7,6 @@
         "name": "swab",
         "error": 4.355,
         "mode": "regression",
-        "n_segment": 6
+        "n_segment": 5
     }
 }
