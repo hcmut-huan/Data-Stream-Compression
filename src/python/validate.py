@@ -9,7 +9,27 @@ class Error(Enum):
     
 
 def validate(algo):
-    if algo["name"] == "pmc":
+    if algo["name"] == "gorilla":
+        if "size" not in algo:
+            exit(Error.MISSING_PARAM.value)
+
+    elif algo["name"] == "chimp":
+        if "size" not in algo or "mode" not in algo:
+            exit(Error.MISSING_PARAM.value)
+        elif algo["mode"] != "basic" and algo["mode"] != "128":
+            exit(Error.INVALID_PARAM.value)
+
+    elif algo["name"] == "elf":
+        if "size" not in algo:
+            exit(Error.MISSING_PARAM.value)
+
+    elif algo["name"] == "serf":
+        if "size" not in algo or "mode" not in algo:
+            exit(Error.MISSING_PARAM.value)
+        elif algo["mode"] != "qt" and algo["mode"] != "xor":
+            exit(Error.INVALID_PARAM.value)
+
+    elif algo["name"] == "pmc":
         if "error" not in algo or "mode" not in algo:
             exit(Error.MISSING_PARAM.value)
         elif algo["mode"] != "midrange" and algo["mode"] != "mean":
@@ -100,7 +120,15 @@ def parse(conf):
     print(conf["interval"])
     
     algo = conf["algorithm"]
-    if algo["name"] == "pmc":
+    if algo["name"] == "gorilla":
+        print("{} {}".format(algo["name"], algo["size"]))
+    elif algo["name"] == "chimp":
+        print("{} {} {}".format(algo["name"], algo["size"], algo["mode"]))
+    elif algo["name"] == "elf":
+        print("{} {}".format(algo["name"], algo["size"]))
+    elif algo["name"] == "serf":
+        print("{} {} {} {}".format(algo["name"], algo["error"], algo["size"], algo["mode"]))
+    elif algo["name"] == "pmc":
         print("{} {} {}".format(algo["name"], algo["error"], algo["mode"]))
     elif algo["name"] == "hybrid-pca":
         print("{} {} {} {}".format(algo["name"], algo["error"], algo["w_size"], algo["n_window"]))

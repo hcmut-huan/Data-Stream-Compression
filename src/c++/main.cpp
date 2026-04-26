@@ -1,7 +1,10 @@
+#include "floating-point/lossy.hpp"
+#include "floating-point/lossless.hpp"
 #include "piecewise-approximation/constant.hpp"
 #include "piecewise-approximation/linear.hpp"
 #include "piecewise-approximation/polynomial.hpp"
 #include "model-selection/model-selection.hpp"
+
 
 using namespace std;
 using namespace std::chrono;
@@ -41,7 +44,23 @@ int main(int argc, char** argv) {
     BaseDecompression* decompressor = nullptr;
     BaseCompression* compressor = nullptr;
 
-    if (ALGO == "pmc") {
+    if (ALGO == "gorilla") {
+        compressor = new Gorilla::Compression(COM_OUTPUT);
+        decompressor = new Gorilla::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time());
+    }
+    else if (ALGO == "chimp") {
+        compressor = new Chimp::Compression(COM_OUTPUT);
+        decompressor = new Chimp::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time());
+    }
+    else if (ALGO == "elf") {
+        compressor = new Elf::Compression(COM_OUTPUT);
+        decompressor = new Elf::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time());
+    }
+    else if (ALGO == "serf") {
+        compressor = new Serf::Compression(COM_OUTPUT);
+        decompressor = new Serf::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time());
+    }
+    else if (ALGO == "pmc") {
         compressor = new PMC::Compression(COM_OUTPUT);       
         decompressor = new PMC::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 
     }
@@ -123,6 +142,8 @@ int main(int argc, char** argv) {
 
     Clock com_clock;
     Clock decom_clock;
+    std::vector<float> decom_times;
+
     while (data_stream.hasNext()) {
         Univariate* data = (Univariate*) data_stream.next();
         
@@ -133,11 +154,12 @@ int main(int argc, char** argv) {
 
         while (obj != nullptr) {
             high_resolution_clock::time_point curr_time = high_resolution_clock::now();
-            decom_clock.tick();
+            decom_clock.start();
             long length = decompressor->process(obj);
-            decom_clock.tick();
+            long duration = decom_clock.stop();
             
             if (length > 0 && time_stream.size() > 0) {
+                decom_times.push_back((float) duration / length);
                 for (int i=0; i<length; i++) {
                     long latency = duration_cast<nanoseconds>(curr_time - time_stream.front()).count();
                     sum_latency += latency;
@@ -157,11 +179,12 @@ int main(int argc, char** argv) {
     BinObj* obj = compressor->complete();
     while (obj != nullptr) {
         high_resolution_clock::time_point curr_time = high_resolution_clock::now();
-        decom_clock.tick();
+        decom_clock.start();
         long length = decompressor->process(obj);
-        decom_clock.tick();
+        long duration = decom_clock.stop();
 
         if (length > 0) {
+            decom_times.push_back((float) duration / length);
             for (int i=0; i<length; i++) {
                 long latency = duration_cast<nanoseconds>(curr_time - time_stream.front()).count();
                 sum_latency += latency;
@@ -180,15 +203,15 @@ int main(int argc, char** argv) {
     std::cout << std::fixed << "Average compress time (ns): " << com_clock.getAvgDuration() << "\n"; 
     std::cout << std::fixed << "Average latency (ns): " << (sum_latency / count) << "\n"; 
     std::cout << std::fixed << "Max latency (ns): " << max_latency << "\n";
-    std::cout << std::fixed << "Average decompress segment time (ns): " << decom_clock.getAvgDuration() << "\n"; 
-    std::cout << std::fixed << "Max decompress segment time (ns): " << decom_clock.getMaxDuration() << "\n"; 
+    std::cout << std::fixed << "Average decompress time (ns): " << ((float) std::accumulate(decom_times.begin(), decom_times.end(), 0.0) / decom_times.size()) << "\n"; 
+    std::cout << std::fixed << "Max decompress time (ns): " << (*std::max_element(decom_times.begin(), decom_times.end())) << "\n"; 
 
     IterIO timeFile(".time", false);
     timeFile.write("Average compress time (ns): " + std::to_string(com_clock.getAvgDuration()));
     timeFile.write("Average latency (ns): " + std::to_string(sum_latency / count));
     timeFile.write("Max latency (ns): " + std::to_string(max_latency));
-    timeFile.write("Average decompress segment time (ns): " + std::to_string(decom_clock.getAvgDuration()));
-    timeFile.write("Max decompress segment time (ns): " + std::to_string(decom_clock.getMaxDuration()));
+    timeFile.write("Average decompress time (ns): " + std::to_string(((float) std::accumulate(decom_times.begin(), decom_times.end(), 0.0) / decom_times.size())));
+    timeFile.write("Max decompress time (ns): " + std::to_string(*std::max_element(decom_times.begin(), decom_times.end())));
     timeFile.close();
     
     delete compressor;
