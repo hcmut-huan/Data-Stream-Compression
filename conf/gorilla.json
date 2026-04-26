@@ -1,0 +1,10 @@
+{
+    "data": "data/Fungi.csv",
+    "compress": "out/compress/MemAvail_gorilla.bin",
+    "decompress": "out/decompress/MemAvail_gorilla.csv",
+    "interval": 1,
+    "algorithm": {
+        "name": "gorilla",
+        "size": 1000
+    }
+}

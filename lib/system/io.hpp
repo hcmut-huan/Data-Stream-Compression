@@ -28,7 +28,10 @@ class IOObj {
 };
 
 class BinObj : public IOObj {
-    private:
+    public:
+        int wBitPos = 0;
+        int rBitPos = 0;
+        int rIndex = 0;
         std::vector<unsigned char> byte_vector;
         BinObj* next = nullptr;
 
@@ -85,6 +88,74 @@ class BinObj : public IOObj {
                 this->byte_vector.erase(this->byte_vector.begin(), this->byte_vector.begin() + n);
 
                 return bytes;
+            }
+        }
+
+        void put(uint32_t value, int bitCount) {
+            // std::cout << "put: " << value << " " << bitCount << "\n";
+            if (bitCount <= 8 - this->wBitPos) {
+                if (this->wBitPos == 0) this->byte_vector.push_back(value << (8 - bitCount));
+                else this->byte_vector.back() |= value << (8 - bitCount - this->wBitPos);
+                
+                this->wBitPos = (bitCount + this->wBitPos) % 8;
+            }
+            else {
+                int i = bitCount - (8 - this->wBitPos);
+                if (this->wBitPos != 0) this->byte_vector.back() |= value >> i;
+                else this->byte_vector.push_back(value >> i);
+
+                value = value & (0xFFFFFFFF >> (32 - i));
+                while (i > 0) {
+                    if (i > 7) {
+                        this->wBitPos = 0;
+                        this->byte_vector.push_back(value >> (i - 8));
+                    }   
+                    else {
+                        this->wBitPos = i;
+                        this->byte_vector.push_back(value << (8 - i));
+                    } 
+                    
+                    i -= 8;
+                    value = value & ((1u << i) - 1);
+                }
+            }
+        }
+
+        uint32_t getBits(int bitCount) {
+            uint32_t result = 0;
+
+            if (bitCount <= 8 - this->rBitPos) {
+                result = ((0xFF >> this->rBitPos) & this->byte_vector[this->rIndex]) >> (8 - this->rBitPos - bitCount);
+                this->rBitPos = (this->rBitPos + bitCount) % 8;
+                if (this->rBitPos == 0) this->rIndex++;
+            }
+            else {
+                int i = bitCount - (8 - this->rBitPos);
+                result = (0xFF >> this->rBitPos) & this->byte_vector[this->rIndex++];
+                
+                while (i > 0) {
+                    if (i > 7) {
+                        result = (result << 8) | this->byte_vector[this->rIndex++];
+                        this->rBitPos = 0;
+                    }
+                    else {
+                        this->rBitPos = i;
+                        result = (result << i) | ((this->byte_vector[this->rIndex] & (0xFF << (8 - i))) >> (8 - i)); 
+                    }
+
+                    i -= 8;
+                }
+            }
+
+            // std::cout << "get: " << result << " " << bitCount << "\n";
+            return result;
+        }
+
+        void flushBits() {
+            // Flush remaining bit in byte
+            if (this->getSize() != 0) {
+                rBitPos = 0;
+                this->byte_vector.clear();
             }
         }
 
@@ -276,6 +347,35 @@ class VariableByteEncoding {
             }
 
             return number;
+        }
+};
+
+class EliasGammaEncoding {
+    private:
+        constexpr static long double kLog2Table[17] = {
+            INFINITY, 0, 1, 1.584962500721156, 2, 2.321928094887362, 2.584962500721156, 2.807354922057604, 3, 3.169925001442312, 
+            3.321928094887362, 3.459431618637297, 3.584962500721156, 3.700439718141092, 3.807354922057604, 3.906890595608519, 4
+        };
+
+    public:
+        static int encode(unsigned long number, BinObj* bitstream) {
+            if (number == 1) {
+                bitstream->put(1, 1);
+                return 1;
+            }
+            else {
+                int n = std::floor(log2(number));
+                bitstream->put(0, n);
+                bitstream->put(number, n + 1);
+
+                return n + n + 1;
+            }
+        }
+
+        static unsigned long decode(BinObj* bitstream) {
+            int n = 0;
+            while (!bitstream->getBits(1)) n++;
+            return n == 0 ? 1 :  (1 << n) | bitstream->getBits(n);
         }
 };
 

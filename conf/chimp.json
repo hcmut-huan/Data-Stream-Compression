@@ -1,0 +1,11 @@
+{
+    "data": "data/Fungi.csv",
+    "compress": "out/compress/MemAvail_chimp.bin",
+    "decompress": "out/decompress/MemAvail_chimp.csv",
+    "interval": 1,
+    "algorithm": {
+        "name": "chimp",
+        "size": 1000,
+        "mode": "basic"
+    }
+}

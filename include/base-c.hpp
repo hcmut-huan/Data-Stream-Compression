@@ -2,11 +2,14 @@
 #define BASE_COMPRESSION_HPP
 
 #include <map>
+#include <bit>
 #include <cmath>
 #include <vector>
 #include <queue>
 #include <deque>
 #include <utility>
+#include <cstdint>
+#include <climits>
 #include <iostream>
 #include <algorithm>
 #include <eigen/Eigen>

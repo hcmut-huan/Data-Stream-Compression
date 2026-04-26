@@ -92,9 +92,10 @@ class Clock {
                 high_resolution_clock::time_point curr = high_resolution_clock::now();
                 long duration = duration_cast<nanoseconds>(curr - this->_tick_pivot).count();
 
-                this->_avg_duration = ((this->_counter) * this->_avg_duration + duration) / ((double) (this->_counter + 1));
+                this->_avg_duration = (this->_counter * this->_avg_duration + duration) / ((double) (this->_counter + 1));
                 this->_max_duration = duration > this->_max_duration ? duration : this->_max_duration;
 
+    
                 this->_counter++;
                 this->_tick_pivot = curr;
             }

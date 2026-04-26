@@ -117,7 +117,7 @@ Statistical output of each execution is appended to the ``experiments.csv`` file
 | ``c_time`` | Average compression time per data point (ns). |
 | ``c_avg_latency`` | Average compression latency per data point (ns). |
 | ``c_max_latency`` | Maximum compression latency observed (ns). |
-| ``d_time`` | Average decompression time per data segment (ns). |
+| ``d_time`` | Average decompression time per data point (ns). |
 | ``max_d_latency`` | Maximum decompression latency observed (ns). |
 
 
@@ -152,6 +152,13 @@ This family partitions a data stream into multiple segments, each represented by
 * `adaptive-approximation` : An Adaptive Algorithm for Online Time Series Segmentation with Error Bound Guarantee. (Link: https://dl.acm.org/doi/10.1145/2247596.2247620)
 * `smart-grid-compression` : A Time-series Compression Technique and Its Application to The Smart Grid. (Link: https://link.springer.com/article/10.1007/s00778-014-0368-8)
 * `adapt-ppa` : Ours.
+
+### Floating point compression:
+This family compresses each individual data point by reducing the number of bits used to represent floating-point values. The algorithms are nearly 1-to-1 mapping from the authors source code to our framework. 
+* `gorilla` : Gorilla: A Fast, Scalable, In-Memory Time Series Database. (Link: https://dl.acm.org/doi/10.14778/2824032.2824078)
+* `chimp` : Chimp: Efficient Lossless Floating Point Compression for Time Series Databases. (Link: https://dl.acm.org/doi/10.14778/3551793.3551852)
+* `elf+` : Elf: Erasing-Based Lossless Floating-Point Compression. (Link: https://dl.acm.org/doi/10.14778/3587136.3587149) 
+* `serf` : Serf: Streaming Error-Bounded Floating-Point Compression. (Link: https://dl.acm.org/doi/10.1145/3725353)
 
 ## Contact
 
