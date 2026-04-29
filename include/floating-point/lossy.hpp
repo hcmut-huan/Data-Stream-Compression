@@ -1,40 +1,72 @@
 #include "base-c.hpp"
 #include "base-d.hpp"
 
-// namespace Camel {
-//     // Source paper: Camel: Efficient Compression of Floating-Point Time Series
-//     // Source path: src/floating-point/lossy/camel.cpp
+// Camel can be considered as a hybrid solution between lossless and lossy categories
+namespace Camel {
+    // Source paper: Camel: Efficient Compression of Floating-Point Time Series
+    // Source path: src/floating-point/lossy/camel.cpp
 
-//     class Compression : public BaseCompression {
-//         private:
-//             long buffer = 0;
+    inline float END_SIGNAL = INFINITY;
+    inline int END_DIFF = 65535;
+    inline double EPSILON = 0.0000001;
 
-//         protected:
-//             void compress(Univariate* data) override;
-//             BinObj* serialize() override;
+    inline int MVALUEBITS[4] = {3, 5, 7, 10};
+    inline int THRESHOLDS[4] = {5, 25, 125, 625};
+    inline int POWERS[5] = {1, 10, 100, 1000, 10000};
 
-//         public:
-//             Compression(std::string output) : BaseCompression(output) {}            
-//             void initialize(int count, char** params) override;
-//             void finalize() override;
-//     };
+    class Compression : public BaseCompression {
+        private:
+            long size = 0;
+            int count = 0;
+            int buffer_size = 0;
+            int decimal_count = 4;
+            BinObj* bitstream = nullptr;
 
-//     class Decompression : public BaseDecompression {
-//         protected:
-//             CSVObj* decompress(BinObj* compress_data) override;
+            int storedVal;
+            bool first = true;
+            
+            void __compress(float value);
+            void __compress_integer(int int_value, int intSignal);
+            void __compress_decimal(int decimal_value, int decimal_count);
+            std::pair<int, int> __decimal_count(float value);
 
-//         public:
-//             Decompression(std::string output, int interval, std::time_t basetime) : BaseDecompression(output, interval, basetime) {} 
-//             void initialize(int count, char** params) override;
-//             void finalize() override;
-//     };
-// };
+        protected:
+            void compress(Univariate* data) override;
+            BinObj* serialize() override;
+
+        public:
+            Compression(std::string output) : BaseCompression(output) {}            
+            void initialize(int count, char** params) override;
+            void finalize() override;
+    };
+
+    class Decompression : public BaseDecompression {
+        private: 
+            int buffer_size = 0;
+            int storedVal;
+            bool first = true;
+
+            std::pair<int, int> __decompress_integer(BinObj* compress_data);
+            std::pair<int, float> __decompress_decimal(BinObj* compress_data);
+            float __decompress(BinObj* compress_data);
+            
+        protected:
+            CSVObj* decompress(BinObj* compress_data) override;
+
+        public:
+            Decompression(std::string output, int interval, std::time_t basetime) : BaseDecompression(output, interval, basetime) {} 
+            void initialize(int count, char** params) override;
+            void finalize() override;
+    };
+};
 
 namespace Serf {
     // Source paper: Serf: Streaming Error-Bounded Floating-Point Compression
     // Source path: src/floating-point/lossy/serf.cpp
 
     inline float END_SIGNAL = INFINITY;
+    inline int LEADING_BITS_PER_VALUE = 2;
+    inline int TRAILING_BITS_PER_VALUE = 1;
 
     class SerfUtils32 {
         public:
@@ -66,17 +98,8 @@ namespace Serf {
             float storedVal = 2;
             int leading_bits_per_value_ = 2;
             int trailing_bits_per_value_ = 1;
-            int lead_distribution_[32];
-            int trail_distribution_[32];
             int stored_leading_zeros_ = INT_MAX;
             int stored_trailing_zeros_ = INT_MAX;
-
-            long compressed_size_this_block_;
-            long compressed_size_last_block_ = 0;
-            long compressed_size_this_window_ = 0;
-            int number_of_values_this_window_ = 0;
-            double compression_ratio_last_window_ = 0;
-
 
             short leading_representation_[32] = {
                 0, 0, 0, 0, 0, 0, 0, 0,
@@ -133,9 +156,6 @@ namespace Serf {
             int stored_trailing_zeros_ = INT_MAX;
             short leading_representation_[4] = {0, 8, 12, 16};
             short trailing_representation_[2] = {0, 16};
-            int leading_bits_per_value_ = 2;
-            int trailing_bits_per_value_ = 1;
-            short look_up_table[16] = {16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
             float __qt_decompress(BinObj* compress_data);
             float __xor_decompress(BinObj* compress_data);

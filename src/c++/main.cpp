@@ -60,6 +60,10 @@ int main(int argc, char** argv) {
         compressor = new Serf::Compression(COM_OUTPUT);
         decompressor = new Serf::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time());
     }
+    else if (ALGO == "camel") {
+        compressor = new Camel::Compression(COM_OUTPUT);
+        decompressor = new Camel::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time());
+    }
     else if (ALGO == "pmc") {
         compressor = new PMC::Compression(COM_OUTPUT);       
         decompressor = new PMC::Decompression(DECOM_OUTPUT, INTERVAL, ((Univariate*) data_stream.get(0))->get_time()); 

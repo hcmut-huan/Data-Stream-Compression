@@ -159,6 +159,7 @@ This family compresses each individual data point by reducing the number of bits
 * `chimp` : Chimp: Efficient Lossless Floating Point Compression for Time Series Databases. (Link: https://dl.acm.org/doi/10.14778/3551793.3551852)
 * `elf+` : Elf: Erasing-Based Lossless Floating-Point Compression. (Link: https://dl.acm.org/doi/10.14778/3587136.3587149) 
 * `serf` : Serf: Streaming Error-Bounded Floating-Point Compression. (Link: https://dl.acm.org/doi/10.1145/3725353)
+* `camel`: Camel: Eﬀicient Compression of Floating-Point Time Series. (Link: https://dl.acm.org/doi/abs/10.1145/3698802)
 
 ## Contact
 

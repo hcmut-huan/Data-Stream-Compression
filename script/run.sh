@@ -2,14 +2,15 @@
 
 # Preprocessing config
 python3 src/python/validate.py $1 > .temp
+FLAG=$?
 
-if [[ $? == 1 ]]; then
+if [[ $FLAG == 1 ]]; then
     echo "Algorithm is not supported."
     exit 1
-elif [[ $? == 2 ]]; then
+elif [[ $FLAG == 2 ]]; then
     echo "Missing required parameter."
     exit 2
-elif [[ $? == 3 ]]; then
+elif [[ $FLAG == 3 ]]; then
     echo "Invalid parameter."
     exit 3
 fi

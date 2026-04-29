@@ -135,12 +135,10 @@ namespace Serf {
             int trailing_count = std::countr_zero(xor_result);
             int leading_zeros = leading_round_[leading_count];
             int trailing_zeros = trailing_round_[trailing_count];
-            ++lead_distribution_[leading_count];
-            ++trail_distribution_[trailing_count];
 
             if (leading_zeros >= this->stored_leading_zeros_ && trailing_zeros >= this->stored_trailing_zeros_ &&
                 (leading_zeros - this->stored_leading_zeros_) + (trailing_zeros - this->stored_trailing_zeros_)
-                < 1 + this->leading_bits_per_value_ + this->trailing_bits_per_value_) 
+                < 1 + Serf::LEADING_BITS_PER_VALUE + Serf::TRAILING_BITS_PER_VALUE) 
             {
                 // case 1
                 int center_bits = 32 - this->stored_leading_zeros_ - this->stored_trailing_zeros_;
@@ -160,17 +158,17 @@ namespace Serf {
                 int center_bits = 32 - this->stored_leading_zeros_ - this->stored_trailing_zeros_;
 
                 // case 00
-                int len = 2 + leading_bits_per_value_ + trailing_bits_per_value_ + center_bits;
+                int len = 2 + Serf::LEADING_BITS_PER_VALUE + Serf::TRAILING_BITS_PER_VALUE + center_bits;
                 if (len > 32) {
                     this->bitstream->put((leading_representation_[this->stored_leading_zeros_] 
-                        << this->trailing_bits_per_value_) | this->trailing_representation_[this->stored_trailing_zeros_], 
-                        2 + this->leading_bits_per_value_ + this->trailing_bits_per_value_);
+                        << Serf::TRAILING_BITS_PER_VALUE) | this->trailing_representation_[this->stored_trailing_zeros_], 
+                        2 + Serf::LEADING_BITS_PER_VALUE + Serf::TRAILING_BITS_PER_VALUE);
 
                     this->bitstream->put(xor_result >> this->stored_trailing_zeros_, center_bits);
                 } 
                 else {
                     this->bitstream->put((((leading_representation_[this->stored_leading_zeros_]
-                        << this->trailing_bits_per_value_) | this->trailing_representation_[this->stored_trailing_zeros_])
+                        << Serf::TRAILING_BITS_PER_VALUE) | this->trailing_representation_[this->stored_trailing_zeros_])
                         << center_bits) | (xor_result >> this->stored_trailing_zeros_), len);
                 }
                 this->size += len;
@@ -249,9 +247,9 @@ namespace Serf {
         } 
         else if (compress_data->getBits(1) == 0) {
             // case 00
-            int lead_and_trail = compress_data->getBits(this->leading_bits_per_value_ + this->trailing_bits_per_value_);
-            int lead = lead_and_trail >> this->trailing_bits_per_value_;
-            int trail = ~(0xffff << this->trailing_bits_per_value_) & lead_and_trail;
+            int lead_and_trail = compress_data->getBits(Serf::LEADING_BITS_PER_VALUE + Serf::TRAILING_BITS_PER_VALUE);
+            int lead = lead_and_trail >> Serf::TRAILING_BITS_PER_VALUE;
+            int trail = ~(0xffff << Serf::TRAILING_BITS_PER_VALUE) & lead_and_trail;
             this->stored_leading_zeros_ = leading_representation_[lead];
             this->stored_trailing_zeros_ = trailing_representation_[trail];
             center_bits = 32 - this->stored_leading_zeros_ - this->stored_trailing_zeros_;

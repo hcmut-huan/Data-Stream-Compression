@@ -29,6 +29,12 @@ def validate(algo):
         elif algo["mode"] != "qt" and algo["mode"] != "xor":
             exit(Error.INVALID_PARAM.value)
 
+    elif algo["name"] == "camel":
+        if "size" not in algo or "decimal" not in algo:
+            exit(Error.MISSING_PARAM.value)
+        elif algo["decimal"] < 1 or algo["decimal"] > 4:
+            exit(Error.INVALID_PARAM.value)
+
     elif algo["name"] == "pmc":
         if "error" not in algo or "mode" not in algo:
             exit(Error.MISSING_PARAM.value)
@@ -128,6 +134,8 @@ def parse(conf):
         print("{} {}".format(algo["name"], algo["size"]))
     elif algo["name"] == "serf":
         print("{} {} {} {}".format(algo["name"], algo["error"], algo["size"], algo["mode"]))
+    elif algo["name"] == "camel":
+        print("{} {} {}".format(algo["name"], algo["size"], algo["decimal"]))    
     elif algo["name"] == "pmc":
         print("{} {} {}".format(algo["name"], algo["error"], algo["mode"]))
     elif algo["name"] == "hybrid-pca":

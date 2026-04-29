@@ -20,6 +20,9 @@ elif [[ $1 == "elf" ]]; then
 elif [[ $1 == "serf" ]]; then
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++20 -c "$WORK_DIR"/src/c++/floating-point/lossy/serf.cpp
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++20 -c "$WORK_DIR"/src/c++/main.cpp
+elif [[ $1 == "camel" ]]; then
+    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++20 -c "$WORK_DIR"/src/c++/floating-point/lossy/camel.cpp
+    g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++20 -c "$WORK_DIR"/src/c++/main.cpp
 elif [[ $1 == "pmc" ]]; then
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++20 -c "$WORK_DIR"/src/c++/piecewise-approximation/constant/pmc.cpp
     g++ -I "$WORK_DIR/include" -I "$WORK_DIR/lib" --std=c++20 -c "$WORK_DIR"/src/c++/main.cpp

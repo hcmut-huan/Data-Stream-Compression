@@ -92,7 +92,6 @@ class BinObj : public IOObj {
         }
 
         void put(uint32_t value, int bitCount) {
-            // std::cout << "put: " << value << " " << bitCount << "\n";
             if (bitCount <= 8 - this->wBitPos) {
                 if (this->wBitPos == 0) this->byte_vector.push_back(value << (8 - bitCount));
                 else this->byte_vector.back() |= value << (8 - bitCount - this->wBitPos);
@@ -147,7 +146,6 @@ class BinObj : public IOObj {
                 }
             }
 
-            // std::cout << "get: " << result << " " << bitCount << "\n";
             return result;
         }
 
