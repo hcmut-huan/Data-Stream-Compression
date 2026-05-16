@@ -1,0 +1,12 @@
+{
+    "data": "data/Fungi.csv",
+    "compress": "out/compress/Fungi_serf.bin",
+    "decompress": "out/decompress/Fungi_serf.csv",
+    "interval": 1,
+    "algorithm": {
+        "name": "serf",
+        "error": 0.871,
+        "size": 1000,
+        "mode": "xor"
+    }
+}
