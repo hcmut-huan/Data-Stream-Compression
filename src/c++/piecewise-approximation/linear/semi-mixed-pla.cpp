@@ -16,7 +16,7 @@ namespace SemiMixedPLA {
         else if (this->status == 1) this->extrm = this->u_line;
     }
 
-    bool OptimalPLA::isSemiConnected(Line* line, long double bound) {
+    bool OptimalPLA::isSemiConnected(Line* line, double bound) {
         Point2D inter = Line::intersection(*line, *this->extrm);
         long start = this->status == -1 ? this->l_cvx.at(0).x : this->u_cvx.at(0).x;
 
@@ -52,7 +52,7 @@ namespace SemiMixedPLA {
         this->l_cvx.erase_from_begin(this->l_cvx.size()-l_length);
     }
 
-    std::pair<Point2D, bool> OptimalPLA::shrink(OptimalPLA* prev_seg, long double error) {
+    std::pair<Point2D, bool> OptimalPLA::shrink(OptimalPLA* prev_seg, double error) {
         Point2D last = this->popLast(true);
         this->t_end = last.x - 1;
 
@@ -98,7 +98,7 @@ namespace SemiMixedPLA {
         }
     }
 
-    std::pair<Point2D, bool> OptimalPLA::extendBackward(OptimalPLA* prev_seg, long double error) {
+    std::pair<Point2D, bool> OptimalPLA::extendBackward(OptimalPLA* prev_seg, double error) {
         Point2D p = prev_seg->popLast(false);
         this->t_start = p.x;
 
@@ -154,7 +154,7 @@ namespace SemiMixedPLA {
         return p;
     }
 
-    void OptimalPLA::approximate(Point2D& p, long double error) {    
+    void OptimalPLA::approximate(Point2D& p, double error) {    
         if (this->pivot == nullptr) {
             this->t_start = p.x;
             this->pivot = new Point2D(p.x, p.y);
@@ -207,7 +207,7 @@ namespace SemiMixedPLA {
 
                 if (update_u) {
                     int index = 0;
-                    long double min_slp = INFINITY;
+                    double min_slp = INFINITY;
 
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
@@ -223,7 +223,7 @@ namespace SemiMixedPLA {
                 }
                 if (update_l) {
                     int index = 0;
-                    long double max_slp = -INFINITY;
+                    double max_slp = -INFINITY;
 
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
@@ -262,7 +262,7 @@ namespace SemiMixedPLA {
         this->window.insert(this->window.begin(), points.begin(), points.end());
     }
 
-    int SemiOptimalPLA::__check(long double error) {
+    int SemiOptimalPLA::__check(double error) {
         if (this->seg_2->status == -1) {
             if (this->seg_1->isSemiConnected(this->seg_2->l_line, error)) return 1;
             else if (this->seg_1->isSemiConnected(this->seg_2->u_line, error)) return 2;
@@ -298,7 +298,7 @@ namespace SemiMixedPLA {
         this->inter->put((float) p_point->x);
         this->inter->put((float) p_point->y);
 
-        long double value = this->seg_1->extrm->subs(this->seg_1->t_start);
+        double value = this->seg_1->extrm->subs(this->seg_1->t_start);
         this->inter->put((float) value);
 
         this->prev_end = new Point2D(this->seg_1->t_start, value);
@@ -313,7 +313,7 @@ namespace SemiMixedPLA {
         if (this->inter != nullptr) delete this->inter;
     }
 
-    void SemiOptimalPLA::finalize(long double error, long index) {
+    void SemiOptimalPLA::finalize(double error, long index) {
         this->seg_2->status = -1;
         this->seg_2->t_end = index - 1;
 
@@ -410,7 +410,7 @@ namespace SemiMixedPLA {
         );
     }
 
-    void SemiOptimalPLA::makeSemiConnect(int semi_case, long double error) {
+    void SemiOptimalPLA::makeSemiConnect(int semi_case, double error) {
         std::vector<Point2D> shrink_points;
         int flag = semi_case;
 
@@ -464,7 +464,7 @@ namespace SemiMixedPLA {
         }
     }
 
-    int SemiOptimalPLA::approximate(Point2D& p, long double error) {
+    int SemiOptimalPLA::approximate(Point2D& p, double error) {
         if (!this->seg_1->is_complete) { 
             this->seg_1->approximate(p, error);
             if (this->seg_1->is_complete) {

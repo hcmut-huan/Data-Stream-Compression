@@ -2,7 +2,7 @@
 
 namespace ConnIPLA {
     // Begin: material
-    void LinearSegment::__optimal_approximate(Point2D& p, long double error) {
+    void LinearSegment::__optimal_approximate(Point2D& p, double error) {
         if (this->u_line == nullptr) {
             Point2D u_p = this->u_cvx.at(0);
             Line u_line = Line::line(
@@ -29,7 +29,7 @@ namespace ConnIPLA {
                 bool update_l = p.y - error > this->l_line->subs(p.x);
                 if (update_u) {
                     int index = 0;
-                    long double min_slp = INFINITY;
+                    double min_slp = INFINITY;
 
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
@@ -45,7 +45,7 @@ namespace ConnIPLA {
                 }
                 if (update_l) {
                     int index = 0;
-                    long double max_slp = -INFINITY;
+                    double max_slp = -INFINITY;
 
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
@@ -66,7 +66,7 @@ namespace ConnIPLA {
         }
     }
 
-    void LinearSegment::__fsw_approximate(Point2D& p, long double error) {
+    void LinearSegment::__fsw_approximate(Point2D& p, double error) {
         if (this->u_line == nullptr) {
             Line u_line = Line::line(*this->pivot, Point2D(p.x, p.y + error));
             Line l_line = Line::line(*this->pivot, Point2D(p.x, p.y - error));
@@ -114,13 +114,13 @@ namespace ConnIPLA {
     }
 
     Line LinearSegment::getLine() {
-        long double slope = (this->u_line->get_slope() + this->l_line->get_slope()) / 2;
-        long double intercept = (this->u_line->get_intercept() + this->l_line->get_intercept()) / 2;
+        double slope = (this->u_line->get_slope() + this->l_line->get_slope()) / 2;
+        double intercept = (this->u_line->get_intercept() + this->l_line->get_intercept()) / 2;
 
         return Line(slope, intercept);
     }
 
-    void LinearSegment::approximate(Point2D& p, long double error) {
+    void LinearSegment::approximate(Point2D& p, double error) {
         if (this->isOptimal) this->__optimal_approximate(p, error);
         else this->__fsw_approximate(p, error);
     }

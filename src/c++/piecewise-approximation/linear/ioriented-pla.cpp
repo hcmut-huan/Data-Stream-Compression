@@ -58,8 +58,8 @@ namespace IOrientedPLA {
         else {
             // u_root: root that higher than l_root
             // Not the root of u_line
-            long double u_root = this->u_line->get_root() > this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
-            long double l_root = this->u_line->get_root() <= this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
+            double u_root = this->u_line->get_root() > this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
+            double l_root = this->u_line->get_root() <= this->l_line->get_root() ? this->u_line->get_root() : this->l_line->get_root();
 
             if (this->u_line->get_slope() * this->l_line->get_slope() < 0) {
                 root = static_cast<long>(std::floor(l_root));
@@ -99,7 +99,7 @@ namespace IOrientedPLA {
         Line u_bound = Line::line((this->u_line->get_slope() + this->l_line->get_slope())/2, this->l_cvx.at(0));
         for (int i=1; i<this->l_cvx.size(); i++) {
             Point2D p = this->l_cvx.at(i);
-            long double intercept = p.y - u_bound.get_slope() * p.x;
+            double intercept = p.y - u_bound.get_slope() * p.x;
             if (intercept < u_bound.get_intercept()) u_bound.set_intercept(intercept);
             else break;
         }
@@ -107,7 +107,7 @@ namespace IOrientedPLA {
         Line l_bound = Line::line(u_bound.get_slope(), this->u_cvx.at(0));
         for (int i=1; i<this->u_cvx.size(); i++) {
             Point2D p = this->u_cvx.at(i);
-            long double intercept = p.y - l_bound.get_slope() * p.x;
+            double intercept = p.y - l_bound.get_slope() * p.x;
             if (intercept > l_bound.get_intercept()) l_bound.set_intercept(intercept);
             else break;
         }
@@ -129,11 +129,11 @@ namespace IOrientedPLA {
             return true;
         }
         else if (u_right >= l_right) {
-            long double shift = u_bound.get_slope() > 0 ? this->upshift : this->downshift;
+            double shift = u_bound.get_slope() > 0 ? this->upshift : this->downshift;
             int sign = u_bound.get_slope() > 0 ? -1 : 1;
 
-            long double u_root = u_bound.get_root(shift) > l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
-            long double l_root = u_bound.get_root(shift) <= l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
+            double u_root = u_bound.get_root(shift) > l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
+            double l_root = u_bound.get_root(shift) <= l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
             long i_u_root = static_cast<long>(std::floor(u_root));
             long i_l_root = static_cast<long>(std::ceil(l_root));
 
@@ -150,11 +150,11 @@ namespace IOrientedPLA {
             }       
         }
         else if (u_left >= l_left) {
-            long double shift = u_bound.get_slope() > 0 ? this->upshift : this->downshift;
+            double shift = u_bound.get_slope() > 0 ? this->upshift : this->downshift;
             int sign = u_bound.get_slope() > 0 ? 1 : -1;
 
-            long double u_root = u_bound.get_root(shift) > l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
-            long double l_root = u_bound.get_root(shift) <= l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
+            double u_root = u_bound.get_root(shift) > l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
+            double l_root = u_bound.get_root(shift) <= l_bound.get_root(shift) ? u_bound.get_root(shift) : l_bound.get_root(shift);
             long i_u_root = static_cast<long>(std::floor(u_root));
             long i_l_root = static_cast<long>(std::ceil(l_root));
 
@@ -253,7 +253,7 @@ namespace IOrientedPLA {
                 
                 if (update_u) {
                     int index = 0;
-                    long double min_slp = INFINITY;
+                    double min_slp = INFINITY;
 
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + this->error));
@@ -268,7 +268,7 @@ namespace IOrientedPLA {
                 }
                 if (update_l) {
                     int index = 0;
-                    long double max_slp = -INFINITY;
+                    double max_slp = -INFINITY;
 
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - this->error));
@@ -328,7 +328,7 @@ namespace IOrientedPLA {
         }
         else if (flag == 3) {
             long root = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
-            long double value = compress_data->getFloat();
+            double value = compress_data->getFloat();
             Line line = Line::line(Point2D(root, 0), Point2D(length, value));
             
             slp = line.get_slope();
@@ -337,7 +337,7 @@ namespace IOrientedPLA {
         else if (flag == 4) {
             long value_1 = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
             long value_2 = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
-            Line line = Line::line(Point2D(0, (long double) value_1 / this->scale), Point2D(length, (long double) value_2 / this->scale));
+            Line line = Line::line(Point2D(0, (double) value_1 / this->scale), Point2D(length, (double) value_2 / this->scale));
 
             slp = line.get_slope();
             intercept = line.get_intercept();
@@ -347,12 +347,12 @@ namespace IOrientedPLA {
             long value = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
 
             if (root > 0) {
-                Line line = Line::line(Point2D(-root, this->downshift), Point2D(length, (long double) value / this->scale));
+                Line line = Line::line(Point2D(-root, this->downshift), Point2D(length, (double) value / this->scale));
                 slp = line.get_slope();
                 intercept = line.get_intercept();
             }
             else {
-                Line line = Line::line(Point2D(root, this->upshift), Point2D(length, (long double) value / this->scale));
+                Line line = Line::line(Point2D(root, this->upshift), Point2D(length, (double) value / this->scale));
                 slp = line.get_slope();
                 intercept = line.get_intercept();
             }
@@ -362,12 +362,12 @@ namespace IOrientedPLA {
             long value = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
             
             if (root > 0) {
-                Line line = Line::line(Point2D(root, this->upshift), Point2D(0, (long double) value / this->scale));
+                Line line = Line::line(Point2D(root, this->upshift), Point2D(0, (double) value / this->scale));
                 slp = line.get_slope();
                 intercept = line.get_intercept();
             }
             else {
-                Line line = Line::line(Point2D(-root, this->downshift), Point2D(0, (long double) value / this->scale));
+                Line line = Line::line(Point2D(-root, this->downshift), Point2D(0, (double) value / this->scale));
                 slp = line.get_slope();
                 intercept = line.get_intercept();
             }

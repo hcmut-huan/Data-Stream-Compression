@@ -74,7 +74,7 @@ namespace OptimalPLA {
                 
                 if (update_u) {
                     int index = -1;
-                    long double min_slp = INFINITY;
+                    double min_slp = INFINITY;
 
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + this->error));
@@ -91,7 +91,7 @@ namespace OptimalPLA {
                 }
                 if (update_l) {
                     int index = -1;
-                    long double max_slp = -INFINITY;
+                    double max_slp = -INFINITY;
 
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - this->error));

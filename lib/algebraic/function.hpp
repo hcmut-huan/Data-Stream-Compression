@@ -5,15 +5,15 @@
 #include <cmath>
 
 struct Point2D {
-    long double x;
-    long double y;
+    double x;
+    double y;
 
     Point2D() {
         this->x = 0;
         this->y = 0;
     }
 
-    Point2D(long double x, long double y) {
+    Point2D(double x, double y) {
         this->x = x;
         this->y = y;
     }
@@ -22,8 +22,8 @@ struct Point2D {
 // Geometry function support timeseries analysis
 class Line {
     private:
-        long double slope;
-        long double intercept;
+        double slope;
+        double intercept;
 
     public:
         Line() {
@@ -31,50 +31,50 @@ class Line {
             this->intercept = 0;
         }
 
-        Line(long double slope, long double intercept) {
+        Line(double slope, double intercept) {
             this->slope = slope;
             this->intercept = intercept;
         }
 
-        long double subs(long double x) {
+        double subs(double x) {
             return this->slope * x + this->intercept;
         }
 
-        void set_slope(long double slope) {
+        void set_slope(double slope) {
             this->slope = slope;
         }
 
-        long double get_slope() {
+        double get_slope() {
             return this->slope;
         }
 
-        long double get_intercept() {
+        double get_intercept() {
             return this->intercept;
         }
 
-        void set_intercept(long double intercept) {
+        void set_intercept(double intercept) {
             this->intercept = intercept;
         }
 
-        long double get_root(long double shift = 0, long double scale = 1) {
+        double get_root(double shift = 0, double scale = 1) {
             if (this->slope == 0) return INFINITY;
             else return (shift - scale * this->intercept) / this->slope;
         }
 
         static Line line(Point2D p1, Point2D p2) {
-            long double slope = (p1.y - p2.y) / (p1.x - p2.x);
-            long double intercept = p1.y - slope*p1.x;
+            double slope = (p1.y - p2.y) / (p1.x - p2.x);
+            double intercept = p1.y - slope*p1.x;
 
             return Line(slope, intercept);
         }
 
-        static Line line(long double slope, Point2D p) {
+        static Line line(double slope, Point2D p) {
             return Line(slope, p.y - slope*p.x);
         }
 
         static Point2D intersection(Line l1, Line l2) {
-            long double x = (l1.intercept - l2.intercept) / (l2.slope - l1.slope);
-            long double y = l1.intercept + l1.slope*x;
+            double x = (l1.intercept - l2.intercept) / (l2.slope - l1.slope);
+            double y = l1.intercept + l1.slope*x;
 
             return Point2D(x, y); 
         }
@@ -85,7 +85,7 @@ class Line {
 class Polynomial {
     public:
         int degree;
-        std::vector<long double> coefficients;    // coefficient degree starts from 0 
+        std::vector<double> coefficients;    // coefficient degree starts from 0 
 
     public:
         template <typename T>
@@ -95,7 +95,7 @@ class Polynomial {
 
             for (int i = 0; i <= k; i++) {
                 int idx = reverse ? k - i : i;
-                this->coefficients[idx] = static_cast<long double>(coeffs[i]);
+                this->coefficients[idx] = static_cast<double>(coeffs[i]);
             }
         }
 
@@ -106,22 +106,22 @@ class Polynomial {
 
             for (int i = 0; i <= k; i++) {
                 int idx = reverse ? k - i : i;
-                this->coefficients[idx] = static_cast<long double>(coeffs[i]);
+                this->coefficients[idx] = static_cast<double>(coeffs[i]);
             }
         }
 
         Polynomial(float coeff) {
             this->degree = 0;
-            this->coefficients.push_back((long double) coeff);
+            this->coefficients.push_back((double) coeff);
         }
 
-        Polynomial(long double coeff) {
+        Polynomial(double coeff) {
             this->degree = 0;
             this->coefficients.push_back(coeff);
         }
 
-        long double subs(long double indeterminate) const {
-            long double result = this->coefficients[0];
+        double subs(double indeterminate) const {
+            double result = this->coefficients[0];
             for (int i=1; i<this->degree+1; i++) {
                 result += this->coefficients[i]*pow(indeterminate, i);
             }
@@ -129,7 +129,7 @@ class Polynomial {
             return result;
         }
 
-        long double get_coefficient(int degree) {
+        double get_coefficient(int degree) {
             return this->coefficients[degree];
         }
 

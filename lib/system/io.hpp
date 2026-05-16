@@ -350,7 +350,7 @@ class VariableByteEncoding {
 
 class EliasGammaEncoding {
     private:
-        constexpr static long double kLog2Table[17] = {
+        constexpr static double kLog2Table[17] = {
             INFINITY, 0, 1, 1.584962500721156, 2, 2.321928094887362, 2.584962500721156, 2.807354922057604, 3, 3.169925001442312, 
             3.321928094887362, 3.459431618637297, 3.584962500721156, 3.700439718141092, 3.807354922057604, 3.906890595608519, 4
         };

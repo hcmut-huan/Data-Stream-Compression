@@ -1,53 +1,53 @@
 #include "piecewise-approximation/linear.hpp"
 
 namespace Swab {
-    Segment::Segment(std::vector<long double>& data, UpperHull& l_cvx, LowerHull& u_cvx) {
+    Segment::Segment(std::vector<double>& data, UpperHull& l_cvx, LowerHull& u_cvx) {
         this->data = data;
         this->u_cvx = u_cvx;
         this->l_cvx = l_cvx;
     }
 
-    Line Approximator::interpolate(std::vector<long double>& data) {
+    Line Approximator::interpolate(std::vector<double>& data) {
         Point2D first(0, data.front());
         Point2D last(data.size()-1, data.back());
 
         return Line::line(first, last);
     }
 
-    Line Approximator::regression(int size, long double acc, long double avg_x, long double avg_y, long square) {
-        long double variance = (long double) square / size - avg_x * avg_x;
-        long double covariance = (long double) acc / size - avg_x * avg_y;
-        long double slope = covariance / variance;
-        long double intercept = avg_y - slope * avg_x;
+    Line Approximator::regression(int size, double acc, double avg_x, double avg_y, long square) {
+        double variance = (double) square / size - avg_x * avg_x;
+        double covariance = (double) acc / size - avg_x * avg_y;
+        double slope = covariance / variance;
+        double intercept = avg_y - slope * avg_x;
 
         return Line(slope, intercept);
     }
 
-    Line Approximator::regression(std::vector<long double>& data) {
-        long double avg_x = 0;
-        long double avg_y = 0;
-        long double acc = 0;
+    Line Approximator::regression(std::vector<double>& data) {
+        double avg_x = 0;
+        double avg_y = 0;
+        double acc = 0;
         unsigned long square = 0;
 
         for (unsigned long i = 0; i < data.size(); i++) {
-            avg_x += (long double)i;
-            avg_y += (long double)data[i];
-            acc += (long double)i * data[i];
+            avg_x += (double)i;
+            avg_y += (double)data[i];
+            acc += (double)i * data[i];
             square += i * i;
         }
         avg_x /= data.size(); avg_y /= data.size();
 
-        long double variance = (long double) square / data.size() - avg_x * avg_x;
-        long double covariance = (long double) acc / data.size() - avg_x * avg_y;
-        long double slope = covariance / variance;
-        long double intercept = avg_y - slope * avg_x;
+        double variance = (double) square / data.size() - avg_x * avg_x;
+        double covariance = (double) acc / data.size() - avg_x * avg_y;
+        double slope = covariance / variance;
+        double intercept = avg_y - slope * avg_x;
 
         return Line(slope, intercept);
     }
 
     // Mean square error calculate
-    long double Approximator::cal_error(std::vector<long double>& data, Line& line) {
-        long double error = 0;
+    double Approximator::cal_error(std::vector<double>& data, Line& line) {
+        double error = 0;
         for (int i=0; i<data.size(); i++) {
             error += std::pow(data[i]-line.subs(i), 2);
         }
@@ -78,9 +78,9 @@ namespace Swab {
         s1.data.insert(s1.data.end(), s2.data.begin() + offset, s2.data.end());
     }
 
-    long double Grouper::merge_cost(Segment& s1, Segment& s2, std::string mode) {
+    double Grouper::merge_cost(Segment& s1, Segment& s2, std::string mode) {
         int offset = mode == "interpolate" ? 1 : 0;
-        std::vector<long double> s = s1.data;
+        std::vector<double> s = s1.data;
         s.insert(s.end(), s2.data.begin() + offset, s2.data.end());
         Line line = mode == "interpolate" ?
             Approximator::interpolate(s) : Approximator::regression(s);
@@ -183,7 +183,7 @@ namespace Swab {
             
             if (this->mode == "interpolate") {
                 // Add last data point of previous segment to ensure connectivity
-                long double tail = this->window.back();
+                double tail = this->window.back();
                 this->window.clear();
                 this->window.push_back(tail);
                 this->window.push_back(data->get_value());

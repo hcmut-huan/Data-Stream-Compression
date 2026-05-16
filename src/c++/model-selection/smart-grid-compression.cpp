@@ -11,14 +11,14 @@ namespace SmartGridCompression {
         this->max = -INFINITY;
     }
 
-    long double ConstantModel::getValue() {
+    double ConstantModel::getValue() {
         return this->value;
     }
 
-    long double ConstantModel::getCompressionRatio() {
+    double ConstantModel::getCompressionRatio() {
         if (this->length == 0) return -1;       // Ignore this model
         else {
-            return (long double) this->length / 7;
+            return (double) this->length / 7;
         } 
     }
 
@@ -30,7 +30,7 @@ namespace SmartGridCompression {
         this->max = -INFINITY;
     }
 
-    bool ConstantModel::approximate(long double bound, std::vector<Point2D>& segment) {
+    bool ConstantModel::approximate(double bound, std::vector<Point2D>& segment) {
         if (this->length == 0) {
             for (Point2D& p : segment) {
                 this->min = this->min < p.y ? this->min : p.y;
@@ -63,7 +63,7 @@ namespace SmartGridCompression {
         }
     }
 
-    bool LinearModel::__verify(long double bound, Line& line) {
+    bool LinearModel::__verify(double bound, Line& line) {
         for (int i=0; i<this->cvx.size(); i++) {
             Point2D p = this->cvx.at(i);
             if (std::abs(line.subs(p.x) - p.y) > bound) return false;
@@ -72,7 +72,7 @@ namespace SmartGridCompression {
         return true;
     }
 
-    long double LinearModel::__distance(Line line, Point2D p) {
+    double LinearModel::__distance(Line line, Point2D p) {
         return std::abs(p.y - line.subs(p.x)) 
             / sqrt(line.get_slope() * line.get_slope() + 1);
     }
@@ -89,12 +89,12 @@ namespace SmartGridCompression {
 
     int LinearModel::__search(int side_index, int prev_v_l) {
         Line line = this->cvx.side(side_index);
-        int v = -1; long double prev_dis = -INFINITY;
+        int v = -1; double prev_dis = -INFINITY;
         
         // search in ccw order
         // if pj(i+1) < pj(i) return i
         for (int i=prev_v_l; i<=this->cvx.size(); i++) {
-            long double dis = this->__distance(line, this->cvx.at_ccw(i));            
+            double dis = this->__distance(line, this->cvx.at_ccw(i));            
             if (prev_dis < dis) {
                 prev_dis = dis;
                 v = i;
@@ -141,9 +141,9 @@ namespace SmartGridCompression {
             
             // find the optimal approximation line
             Line line = Line::line(A, B);
-            long double a = line.get_slope();
-            long double b = line.get_intercept();
-            long double c = (C.y - line.get_slope() * C.x + line.get_intercept()) / 2;
+            double a = line.get_slope();
+            double b = line.get_intercept();
+            double c = (C.y - line.get_slope() * C.x + line.get_intercept()) / 2;
             
             return Line(a, c);
         }
@@ -161,10 +161,10 @@ namespace SmartGridCompression {
         return this->line;
     }
 
-    long double LinearModel::getCompressionRatio() {
+    double LinearModel::getCompressionRatio() {
         if (this->length == 0) return -1;       // Ignore this model
         else {
-            return (long double) this->length / 11;
+            return (double) this->length / 11;
         } 
     }
 
@@ -178,7 +178,7 @@ namespace SmartGridCompression {
         }
     }
 
-    bool LinearModel::approximate(long double bound, std::vector<Point2D>& segment) {
+    bool LinearModel::approximate(double bound, std::vector<Point2D>& segment) {
         if (this->length == 0) {
             for (Point2D& p : segment) {
                 this->cvx.append(p);
@@ -224,10 +224,10 @@ namespace SmartGridCompression {
         return this->polynomial;
     }
 
-    long double PolynomialModel::getCompressionRatio() {
+    double PolynomialModel::getCompressionRatio() {
         if (this->length == 0) return -1;       // Ignore this model
         else {
-            return (long double) this->length / (3 + 4 * (this->degree + 1));
+            return (double) this->length / (3 + 4 * (this->degree + 1));
         } 
     }
 
@@ -239,7 +239,7 @@ namespace SmartGridCompression {
         }
     }
 
-    bool PolynomialModel::approximate(long double bound, std::vector<Point2D>& segment) {
+    bool PolynomialModel::approximate(double bound, std::vector<Point2D>& segment) {
         if (this->polynomial != nullptr) {
             Eigen::VectorXd x(this->degree + 2);                    // decision variables
             Eigen::VectorXd c(this->degree + 2);                    // objective coefficients
@@ -380,10 +380,10 @@ namespace SmartGridCompression {
 
     void Compression::__choose_best_model() {
         int index = 0;
-        long double max_gain = -INFINITY;
+        double max_gain = -INFINITY;
 
         for (int i=0; i<this->models.size(); i++) {
-            long double gain = this->models[i]->getCompressionRatio();
+            double gain = this->models[i]->getCompressionRatio();
             if (gain > max_gain) {
                 index = i;
                 max_gain = gain;

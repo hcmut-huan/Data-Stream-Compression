@@ -2,13 +2,13 @@
 
 namespace MixPiece {
     // Begin: Material 
-    Segment::Segment(long t, long double a, long double b) {
+    Segment::Segment(long t, double a, double b) {
         this->t = t;
         this->a = a;
         this->b = b;
     }
 
-    Segment::Segment(long t, long double aMin, long double aMax, long double b) {
+    Segment::Segment(long t, double aMin, double aMax, double b) {
         this->t = t;
         this->aMin = aMin;
         this->aMax = aMax;
@@ -16,17 +16,17 @@ namespace MixPiece {
         this->a = (aMin + aMax) / 2;
     }
 
-    BBlock::BBlock(long double b) {
+    BBlock::BBlock(double b) {
         this->b = b;
         this->blocks.push_back(Block());
     }
 
-    BBlock::BBlock(long double b, long double a_u, long double a_l, long t) {
+    BBlock::BBlock(double b, double a_u, double a_l, long t) {
         this->b = b;
         this->blocks.push_back(Block(a_u, a_l, t));
     }
 
-    void BBlock::push_back(long double a_u, long double a_l, long t) {
+    void BBlock::push_back(double a_u, double a_l, long t) {
         this->blocks.push_back(Block(a_u, a_l, t));
     }
 
@@ -44,11 +44,11 @@ namespace MixPiece {
         }
     }
 
-    bool BBlock::is_intersect(long double a_u, long double a_l) {
+    bool BBlock::is_intersect(double a_u, double a_l) {
         return a_l <= this->blocks.back().a_u && a_u >= this->blocks.back().a_l;
     }
 
-    void BBlock::intersect(long double a_u, long double a_l, long t) {
+    void BBlock::intersect(double a_u, double a_l, long t) {
         if (this->blocks.back().a_u > a_u) this->blocks.back().a_u = a_u;
         if (this->blocks.back().a_l < a_l) this->blocks.back().a_l = a_l;
 
@@ -60,7 +60,7 @@ namespace MixPiece {
         this->a_l = -INFINITY;
     }
 
-    BBlock::Block::Block(long double a_u, long double a_l, long t) {
+    BBlock::Block::Block(double a_u, double a_l, long t) {
         this->a_u = a_u;
         this->a_l = a_l;
         this->t.push_back(t);
@@ -71,7 +71,7 @@ namespace MixPiece {
         this->a_l = -INFINITY;
     }
 
-    ABlock::ABlock(long double b, long double a_u, long double a_l, long t) {
+    ABlock::ABlock(double b, double a_u, double a_l, long t) {
         this->a_u = a_u;
         this->a_l = a_l;
 
@@ -83,18 +83,18 @@ namespace MixPiece {
             [](const Block& a, const Block& b) { return a.t < b.t; });
     }
 
-    bool ABlock::is_intersect(long double a_u, long double a_l) {
+    bool ABlock::is_intersect(double a_u, double a_l) {
         return a_l <= this->a_u && a_u >= this->a_l;
     } 
 
-    void ABlock::intersect(long double b, long double a_u, long double a_l, long t) {
+    void ABlock::intersect(double b, double a_u, double a_l, long t) {
         if (this->a_u > a_u) this->a_u = a_u;
         if (this->a_l < a_l) this->a_l = a_l;
 
         this->blocks.push_back(Block(b, t));
     }
 
-    ABlock::Block::Block(long double b, long t) {
+    ABlock::Block::Block(double b, long t) {
         this->b = b;
         this->t = t;
     }
@@ -183,7 +183,7 @@ namespace MixPiece {
         std::vector<Segment> ungrouped;
         
         for (auto it = this->intervals.begin(); it != this->intervals.end(); it++) {
-            long double b = it->first;
+            double b = it->first;
             
             std::vector<Segment> segments = it->second;
             std::sort(segments.begin(), segments.end(), 

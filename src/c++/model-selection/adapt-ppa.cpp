@@ -33,7 +33,7 @@ namespace AdaptPPA {
         delete this->l_line; this->l_line = n_l_line;
     }
 
-    void LinearSegment::approximate(Point2D& p, long double error) {        
+    void LinearSegment::approximate(Point2D& p, double error) {        
         if (this->pivot == nullptr) {
             this->p_start = new Point2D(p.x, p.y);
             this->pivot = new Point2D(p.x, p.y);
@@ -68,7 +68,7 @@ namespace AdaptPPA {
                 
                 if (update_u) {
                     int index = -1;
-                    long double min_slp = INFINITY;
+                    double min_slp = INFINITY;
 
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
@@ -85,7 +85,7 @@ namespace AdaptPPA {
                 }
                 if (update_l) {
                     int index = -1;
-                    long double max_slp = -INFINITY;
+                    double max_slp = -INFINITY;
 
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
@@ -126,8 +126,8 @@ namespace AdaptPPA {
         
             Eigen::VectorXd x = A.colPivHouseholderQr().solve(b);
 
-            long double extreme_x = (-x(1)) / (2*x(0));
-            long double extreme_y = x(0)*extreme_x*extreme_x + x(1)*extreme_x + x(2);
+            double extreme_x = (-x(1)) / (2*x(0));
+            double extreme_y = x(0)*extreme_x*extreme_x + x(1)*extreme_x + x(2);
             
             if (line_1.get_slope() * line_2.get_slope() > 0) {
                 if (extreme_x > this->p1->x && extreme_x < this->p3->x) flag = false;
@@ -152,7 +152,7 @@ namespace AdaptPPA {
         return flag;
     }
 
-    long double* Compression::__approximate(int pivot) {
+    double* Compression::__approximate(int pivot) {
         int n = this->window.size() - pivot;
         Eigen::MatrixXd A(n, this->degree + 1);
         Eigen::VectorXd b(n);
@@ -164,7 +164,7 @@ namespace AdaptPPA {
             }
         }
 
-        long double* coeffs = new long double[this->degree+1];
+        double* coeffs = new double[this->degree+1];
         Eigen::VectorXd coefficients = (((A.transpose() * A).inverse()) * A.transpose()) * b;
         for (int i=0; i<=this->degree; i++) coeffs[i] = coefficients(i);
 
@@ -243,7 +243,7 @@ namespace AdaptPPA {
         else {
             int pivot = this->seg_2->is_complete ? this->seg_2->getLength() : 0;
             int embedded = (this->window.size() - pivot) << 2 | this->degree;
-            long double* coeffs = this->__approximate(pivot);
+            double* coeffs = this->__approximate(pivot);
             
             obj->put(VariableByteEncoding::encode(embedded));
             for (int i = 0; i <= this->degree; i++) {

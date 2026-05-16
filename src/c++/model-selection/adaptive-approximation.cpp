@@ -33,11 +33,11 @@ namespace AdaptiveApproximation {
         this->coeffs = new double[2];
     }
 
-    long double ExpoFunction::subs(long double x) {
+    double ExpoFunction::subs(double x) {
         return this->coeffs[1] * exp(this->coeffs[0] * x);
     }
     
-    bool ExpoFunction::approximate(long double bound, long double data) {
+    bool ExpoFunction::approximate(double bound, double data) {
         Point2D p(this->length, data);
 
         if (this->pivot == nullptr) {
@@ -45,8 +45,8 @@ namespace AdaptiveApproximation {
             this->pivot = new Point2D(p.x, p.y);
         }
         else {
-            long double n_upper = (log(p.y + bound) - log(this->pivot->y)) / (p.x - this->pivot->x);
-            long double n_lower = (log(p.y - bound) - log(this->pivot->y)) / (p.x - this->pivot->x);
+            double n_upper = (log(p.y + bound) - log(this->pivot->y)) / (p.x - this->pivot->x);
+            double n_lower = (log(p.y - bound) - log(this->pivot->y)) / (p.x - this->pivot->x);
             
             if (n_upper < this->lower || n_lower > this->upper) { 
                 this->complete = true; 
@@ -68,11 +68,11 @@ namespace AdaptiveApproximation {
         this->coeffs = new double[2];
     }
 
-    long double LinearFunction::subs(long double x) {
+    double LinearFunction::subs(double x) {
         return this->coeffs[0] * x + this->coeffs[1];
     }
     
-    bool LinearFunction::approximate(long double bound, long double data) {
+    bool LinearFunction::approximate(double bound, double data) {
         Point2D p(this->length, data);
 
         if (this->pivot == nullptr) {
@@ -80,8 +80,8 @@ namespace AdaptiveApproximation {
             this->pivot = new Point2D(p.x, p.y);
         }
         else {
-            long double n_upper = (p.y - this->pivot->y + bound) / (p.x - this->pivot->x);
-            long double n_lower = (p.y - this->pivot->y - bound) / (p.x - this->pivot->x);
+            double n_upper = (p.y - this->pivot->y + bound) / (p.x - this->pivot->x);
+            double n_lower = (p.y - this->pivot->y - bound) / (p.x - this->pivot->x);
 
             if (n_upper < this->lower || n_lower > this->upper) { 
                 this->complete = true; 
@@ -104,12 +104,12 @@ namespace AdaptiveApproximation {
         this->coeffs = new double[degree+1];
     }
 
-    long double PolyFunction::subs(long double x) {
+    double PolyFunction::subs(double x) {
         Polynomial func(this->degree, this->coeffs, true);
         return func.subs(x);
     }
 
-    bool PolyFunction::approximate(long double bound, long double data) {
+    bool PolyFunction::approximate(double bound, double data) {
         Point2D p(this->length, data);
 
         if (this->pivot == nullptr) {
@@ -274,7 +274,7 @@ namespace AdaptiveApproximation {
         if (this->Frv) {
             this->yield();
             Model* model = this->candidates[this->best_model].back();
-            long double last = model->complete
+            double last = model->complete
                 ? model->subs(model->getLen() - 1) : model->subs(0);
             
             for (std::vector<Model*>& candidate : this->candidates) {

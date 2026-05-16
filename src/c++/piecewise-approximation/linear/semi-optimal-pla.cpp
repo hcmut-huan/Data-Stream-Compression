@@ -16,7 +16,7 @@ namespace SemiOptimalPLA {
         else if (this->status == 1) this->extrm = this->u_line;
     }
 
-    bool OptimalPLA::isSemiConnected(Line* line, long double bound) {
+    bool OptimalPLA::isSemiConnected(Line* line, double bound) {
         Point2D inter = Line::intersection(*line, *this->extrm);
         long start = this->status == -1 ? this->l_cvx.at(0).x : this->u_cvx.at(0).x;
 
@@ -52,7 +52,7 @@ namespace SemiOptimalPLA {
         this->l_cvx.erase_from_begin(this->l_cvx.size()-l_length);
     }
 
-    std::pair<Point2D, bool> OptimalPLA::shrink(OptimalPLA* prev_seg, long double error) {
+    std::pair<Point2D, bool> OptimalPLA::shrink(OptimalPLA* prev_seg, double error) {
         Point2D last = this->popLast(true);
         this->t_end = last.x - 1;
 
@@ -98,7 +98,7 @@ namespace SemiOptimalPLA {
         }
     }
 
-    std::pair<Point2D, bool> OptimalPLA::extendBackward(OptimalPLA* prev_seg, long double error) {
+    std::pair<Point2D, bool> OptimalPLA::extendBackward(OptimalPLA* prev_seg, double error) {
         Point2D p = prev_seg->popLast(false);
         this->t_start = p.x;
 
@@ -152,7 +152,7 @@ namespace SemiOptimalPLA {
         return p;
     }
 
-    void OptimalPLA::approximate(Point2D& p, long double error) {        
+    void OptimalPLA::approximate(Point2D& p, double error) {        
         if (this->pivot == nullptr) {
             this->t_start = p.x;
             this->pivot = new Point2D(p.x, p.y);
@@ -205,7 +205,7 @@ namespace SemiOptimalPLA {
 
                 if (update_u) {
                     int index = -1;
-                    long double min_slp = INFINITY;
+                    double min_slp = INFINITY;
 
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
@@ -222,7 +222,7 @@ namespace SemiOptimalPLA {
                 }
                 if (update_l) {
                     int index = -1;
-                    long double max_slp = -INFINITY;
+                    double max_slp = -INFINITY;
 
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
@@ -376,7 +376,7 @@ namespace SemiOptimalPLA {
 
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
-        long double delta = this->curr_end->x - this->prev_end->x;
+        double delta = this->curr_end->x - this->prev_end->x;
         
         obj->put((float) delta);
         obj->put((float) this->curr_end->y);

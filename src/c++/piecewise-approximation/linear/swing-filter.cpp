@@ -13,10 +13,10 @@ namespace SwingFilter {
     }
 
     void Compression::finalize() {
-        long double A_ig = this->A_num / this->A_den;
-        long double temp = A_ig > this->u_line->get_slope() ? this->u_line->get_slope() : A_ig;
-        long double a_ig = temp > this->l_line->get_slope() ? temp : this->l_line->get_slope();
-        long double b_ig = this->pivot->y - a_ig * this->pivot->x;
+        double A_ig = this->A_num / this->A_den;
+        double temp = A_ig > this->u_line->get_slope() ? this->u_line->get_slope() : A_ig;
+        double a_ig = temp > this->l_line->get_slope() ? temp : this->l_line->get_slope();
+        double b_ig = this->pivot->y - a_ig * this->pivot->x;
 
         Line line(a_ig, b_ig);
         this->curr_end = new Point2D(this->index-1, line.subs(this->index-1));
@@ -58,10 +58,10 @@ namespace SwingFilter {
         }
         else {
             if (this->l_line->subs(p.x) > p.y + this->error || p.y - this->error > this->u_line->subs(p.x)) {
-                long double A_ig = this->A_num / this->A_den;
-                long double temp = A_ig > this->u_line->get_slope() ? this->u_line->get_slope() : A_ig;
-                long double a_ig = temp > this->l_line->get_slope() ? temp : this->l_line->get_slope();
-                long double b_ig = this->pivot->y - a_ig * this->pivot->x;
+                double A_ig = this->A_num / this->A_den;
+                double temp = A_ig > this->u_line->get_slope() ? this->u_line->get_slope() : A_ig;
+                double a_ig = temp > this->l_line->get_slope() ? temp : this->l_line->get_slope();
+                double b_ig = this->pivot->y - a_ig * this->pivot->x;
                 
                 Line line(a_ig, b_ig);
                 this->curr_end = new Point2D(p.x-1, line.subs(p.x-1));

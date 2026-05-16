@@ -88,7 +88,7 @@ namespace Serf {
         private:
             long size = 0;
             int count = 0;
-            long double error;
+            double error;
             int buffer_size = 0;
             std::string mode = "";
             BinObj* bitstream = nullptr;
@@ -145,7 +145,7 @@ namespace Serf {
     class Decompression : public BaseDecompression {
         private:
             
-            long double error;
+            double error;
             int buffer_size = 0;
             std::string mode = "";
             float (Decompression::*__decompress) (BinObj*);

@@ -18,7 +18,7 @@ namespace CachedNormalEquation {
     class Compression : public BaseCompression {
         private:
             int degree = -1;
-            long double error = 0;
+            double error = 0;
             std::string mode = "";
 
             Model* model = nullptr;
@@ -59,33 +59,33 @@ namespace PolySwab {
 
     class Approximator {
         private:
-            static std::vector<long double> __interpolate(int degree, std::vector<long double>& data);
-            static std::vector<long double> __regression(int degree, std::vector<long double>& data);
+            static std::vector<double> __interpolate(int degree, std::vector<double>& data);
+            static std::vector<double> __regression(int degree, std::vector<double>& data);
         
         public:
-            static Polynomial approximate(std::string mode, int degree, std::vector<long double>& data);
-            static long double cal_error(std::vector<long double>& segment, Polynomial& model);
+            static Polynomial approximate(std::string mode, int degree, std::vector<double>& data);
+            static double cal_error(std::vector<double>& segment, Polynomial& model);
     };
 
     class Grouper {
         public:
-            static void merge(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode);
-            static long double merge_cost(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode, int degree, long double error);
-            static bool bound_check(std::vector<long double>& segment, Polynomial& model, long double error, bool skip=false);
+            static void merge(std::vector<double>& s1, std::vector<double>& s2, std::string mode);
+            static double merge_cost(std::vector<double>& s1, std::vector<double>& s2, std::string mode, int degree, double error);
+            static bool bound_check(std::vector<double>& segment, Polynomial& model, double error, bool skip=false);
     };
 
     class Compression : public BaseCompression {
         private:
             int degree = -1;
             int n_segment = 0;
-            long double error = 0;
+            double error = 0;
             std::string mode = "";
 
             bool first = true;
-            std::vector<long double> window;
+            std::vector<double> window;
             std::vector<Polynomial> models; 
-            std::vector<long double> m_err;
-            std::vector<std::vector<long double>> segments;
+            std::vector<double> m_err;
+            std::vector<std::vector<double>> segments;
 
             void __bottom_up();
             bool __sliding_window();
@@ -104,7 +104,7 @@ namespace PolySwab {
         private:
             int degree = -1;
             std::string mode = "";
-            long double pivot = INFINITY;
+            double pivot = INFINITY;
             
         protected:
             CSVObj* decompress(BinObj* compress_data) override;

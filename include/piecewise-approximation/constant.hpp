@@ -7,12 +7,12 @@ namespace PMC {
 
     class Compression : public BaseCompression {
         private:
-            long double error = 0;
+            double error = 0;
             std::string mode = "";
 
-            long double min = INFINITY;
-            long double max = -INFINITY;
-            long double value = 0;
+            double min = INFINITY;
+            double max = -INFINITY;
+            double value = 0;
             int length = 0;
 
             long index = 0;
@@ -52,8 +52,8 @@ namespace HybridPCA {
     // Source path: src/piecewise-approximation/constant/hybrid-pmc
 
     struct Window {
-        long double min = INFINITY;
-        long double max = -INFINITY;
+        double min = INFINITY;
+        double max = -INFINITY;
         std::vector<Point2D*> data;
 
         ~Window();
@@ -62,26 +62,26 @@ namespace HybridPCA {
     };
 
     struct Buffer {
-        long double min = INFINITY;
-        long double max = -INFINITY;
+        double min = INFINITY;
+        double max = -INFINITY;
         std::vector<Window*> windows;
 
         int size();
         void pop();
         void clear();
-        long double value();
+        double value();
         void append(Window* window);
         bool is_appendable(Window* window, float bound);
     };
 
     class Compression : public BaseCompression {
         private:
-            long double error = 0;
+            double error = 0;
             int w_size = 0;
             int n_window = 0;
 
             int length = 0;
-            long double value = 0;
+            double value = 0;
             long index = 0;
             Buffer buffer;
             Window* window = nullptr;

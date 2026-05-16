@@ -1,7 +1,7 @@
 #include "piecewise-approximation/polynomial.hpp"
 
 namespace PolySwab {
-    std::vector<long double> Approximator::__interpolate(int degree, std::vector<long double>& data) {
+    std::vector<double> Approximator::__interpolate(int degree, std::vector<double>& data) {
         std::vector<int> indices;
         // Get evenly spaced indices between starting and ending data points
         for (int i = 0; i <= degree; i++) {
@@ -19,12 +19,12 @@ namespace PolySwab {
         }
         Eigen::VectorXd c = A.colPivHouseholderQr().solve(b);
 
-        return std::vector<long double>(c.data(), c.data() + c.size());
+        return std::vector<double>(c.data(), c.data() + c.size());
     }
 
     // For runtime optimization: Use cached (previous) model if available.
     // Only approximate or compute a new model when the previous one cannot be reused.
-    std::vector<long double> Approximator::__regression(int degree, std::vector<long double>& data) {
+    std::vector<double> Approximator::__regression(int degree, std::vector<double>& data) {
         Eigen::MatrixXd A(data.size(), degree + 1);
         Eigen::VectorXd b(data.size());
         for (int i = 0; i < data.size(); ++i) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
@@ -35,11 +35,11 @@ namespace PolySwab {
         }
         Eigen::VectorXd c = (((A.transpose() * A).inverse()) * A.transpose()) * b;
         
-        return std::vector<long double>(c.data(), c.data() + c.size());
+        return std::vector<double>(c.data(), c.data() + c.size());
     }
 
-    Polynomial Approximator::approximate(std::string mode, int degree, std::vector<long double>& data) {
-        std::vector<long double> coeffs;
+    Polynomial Approximator::approximate(std::string mode, int degree, std::vector<double>& data) {
+        std::vector<double> coeffs;
 
         if (mode == "regression") 
             coeffs = Approximator::__regression(degree, data);
@@ -50,8 +50,8 @@ namespace PolySwab {
     }
 
     // Mean square error calculate
-    long double Approximator::cal_error(std::vector<long double>& segment, Polynomial& model) {
-        long double error = 0;
+    double Approximator::cal_error(std::vector<double>& segment, Polynomial& model) {
+        double error = 0;
         for (int i=0; i<segment.size(); i++) {
             error += std::pow(segment[i]-model.subs(i), 2);
         }
@@ -60,7 +60,7 @@ namespace PolySwab {
     }
 
     // Verify new line satisfies infinity bound or not
-    bool Grouper::bound_check(std::vector<long double>& segment, Polynomial& model, long double error, bool skip) {
+    bool Grouper::bound_check(std::vector<double>& segment, Polynomial& model, double error, bool skip) {
         if (skip) {
             Point2D p(segment.size()-1, segment.back());
             return std::abs(p.y-model.subs(p.x)) <= error;
@@ -74,14 +74,14 @@ namespace PolySwab {
         }
     }
 
-    void Grouper::merge(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode) {
+    void Grouper::merge(std::vector<double>& s1, std::vector<double>& s2, std::string mode) {
         int offset = mode == "interpolate" ? 1 : 0;
         s1.insert(s1.end(), s2.begin() + offset, s2.end());
     }
 
-    long double Grouper::merge_cost(std::vector<long double>& s1, std::vector<long double>& s2, std::string mode, int degree, long double error) {
+    double Grouper::merge_cost(std::vector<double>& s1, std::vector<double>& s2, std::string mode, int degree, double error) {
         int offset = mode == "interpolate" ? 1 : 0;
-        std::vector<long double> s = s1;
+        std::vector<double> s = s1;
         s.insert(s.end(), s2.begin() + offset, s2.end());
         Polynomial model = Approximator::approximate(mode, degree, s);
 
@@ -175,7 +175,7 @@ namespace PolySwab {
                 
                 if (this->mode == "interpolate") {
                     // Add last data point of previous segment to ensure connectivity
-                    long double tail = this->window.back();
+                    double tail = this->window.back();
                     this->window.clear();
                     this->window.push_back(tail);
                     this->window.push_back(data->get_value());
@@ -203,7 +203,7 @@ namespace PolySwab {
 
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
-        std::vector<long double>& segment = this->segments[0];
+        std::vector<double>& segment = this->segments[0];
         Polynomial& model = this->models[0];
 
         if (this->mode == "interpolate") {

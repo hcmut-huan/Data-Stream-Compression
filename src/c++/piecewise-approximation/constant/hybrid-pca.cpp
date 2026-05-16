@@ -35,7 +35,7 @@ namespace HybridPCA {
         this->windows.clear();
     }
 
-    long double Buffer::value() {
+    double Buffer::value() {
         return (this->max + this->min) / 2;
     }
 
@@ -55,9 +55,9 @@ namespace HybridPCA {
 
     // Begin: compression
     void Compression::__pmc() {
-        long double min = INFINITY;
-        long double max = -INFINITY;
-        long double value = 0;
+        double min = INFINITY;
+        double max = -INFINITY;
+        double value = 0;
         
         int length = 0;
         for (Point2D* p : window->data) {

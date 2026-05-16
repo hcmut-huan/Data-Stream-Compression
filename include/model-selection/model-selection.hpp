@@ -20,30 +20,30 @@ namespace AdaptiveApproximation {
             double* getCoeffs();
             std::string getType();
 
-            virtual long double subs(long double x) = 0;
-            virtual bool approximate(long double bound, long double data) = 0;
+            virtual double subs(double x) = 0;
+            virtual bool approximate(double bound, double data) = 0;
     };
 
     class ExpoFunction : public Model {
         private:
-            long double upper = INFINITY;
-            long double lower = -INFINITY;
+            double upper = INFINITY;
+            double lower = -INFINITY;
 
         public:
             ExpoFunction();
-            long double subs(long double x) override;
-            bool approximate(long double bound, long double data) override;
+            double subs(double x) override;
+            bool approximate(double bound, double data) override;
     };
 
     class LinearFunction : public Model {
         private:
-            long double upper = INFINITY;
-            long double lower = -INFINITY;
+            double upper = INFINITY;
+            double lower = -INFINITY;
 
         public:
             LinearFunction();
-            long double subs(long double x) override;
-            bool approximate(long double bound, long double data) override;
+            double subs(double x) override;
+            bool approximate(double bound, double data) override;
     };
 
     class PolyFunction : public Model {
@@ -53,14 +53,14 @@ namespace AdaptiveApproximation {
 
         public:
             PolyFunction(int degree, std::string type);
-            long double subs(long double x) override;
-            bool approximate(long double bound, long double data) override;
+            double subs(double x) override;
+            bool approximate(double bound, double data) override;
     };
 
     class Compression : public BaseCompression {
         private:
-            long double penalty = 0;
-            long double error = 0;
+            double penalty = 0;
+            double error = 0;
             std::vector<std::string> types;
 
             bool first = true;
@@ -104,24 +104,24 @@ namespace SmartGridCompression {
             int length;
 
             virtual void clear() = 0;
-            virtual long double getCompressionRatio() = 0;
-            virtual bool approximate(long double bound, std::vector<Point2D>& segment) = 0;
+            virtual double getCompressionRatio() = 0;
+            virtual bool approximate(double bound, std::vector<Point2D>& segment) = 0;
     };
 
     // Constant approximate
     class ConstantModel : public Model {
         private:
-            long double value;
-            long double min;
-            long double max;
+            double value;
+            double min;
+            double max;
 
         public:
             ConstantModel();
-            long double getValue();
+            double getValue();
 
             void clear() override;
-            long double getCompressionRatio() override;
-            bool approximate(long double bound, std::vector<Point2D>& segment) override;
+            double getCompressionRatio() override;
+            bool approximate(double bound, std::vector<Point2D>& segment) override;
     };
 
     // Linear approximate    
@@ -130,8 +130,8 @@ namespace SmartGridCompression {
             Line* line;
             ConvexHull cvx;
 
-            bool __verify(long double bound, Line& line);
-            long double __distance(Line line, Point2D p);
+            bool __verify(double bound, Line& line);
+            double __distance(Line line, Point2D p);
             int __x_external(int x, int x1, int x2);
             int __search(int side_index, int prev_v_l);
             Line __approx(const std::vector<Point2D>& segment);
@@ -141,8 +141,8 @@ namespace SmartGridCompression {
             Line* getLine();
 
             void clear() override;
-            long double getCompressionRatio() override;
-            bool approximate(long double bound, std::vector<Point2D>& segment) override;
+            double getCompressionRatio() override;
+            bool approximate(double bound, std::vector<Point2D>& segment) override;
     };
 
     // Polynomial approximate
@@ -156,14 +156,14 @@ namespace SmartGridCompression {
             Polynomial* getPolynomial();
 
             void clear() override;
-            long double getCompressionRatio() override;
-            bool approximate(long double bound, std::vector<Point2D>& segment) override;
+            double getCompressionRatio() override;
+            bool approximate(double bound, std::vector<Point2D>& segment) override;
     };
 
     class Compression : public BaseCompression {
         private:
             int max_degree = 0;
-            long double error = 0;
+            double error = 0;
 
             int curr_degree = 0;
             int chosen_model = -1;
@@ -215,13 +215,13 @@ namespace AdaptPPA {
             Line getLine();
             int getLength();
             void translation(Point2D* p);
-            void approximate(Point2D& p, long double error);
+            void approximate(Point2D& p, double error);
     };
 
     class Compression : public BaseCompression {
         private:
             int max_degree = 0;
-            long double error = 0;
+            double error = 0;
 
             int degree = 1;
             int direction = 0;
@@ -238,7 +238,7 @@ namespace AdaptPPA {
             std::vector<Point2D> window;
 
             bool __merge_check();
-            long double* __approximate(int pivot);
+            double* __approximate(int pivot);
 
         protected:
             void compress(Univariate* data) override;

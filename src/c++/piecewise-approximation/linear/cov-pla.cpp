@@ -52,10 +52,10 @@ namespace CovariancePLA {
         this->average_y = (this->average_y * (this->length - 1) + p.y) / this->length;
 
         if (this->length > 1) {
-            long double variance = (long double) this->accumulate_square / this->length - this->average_x * this->average_x;
-            long double covariance = (long double) this->accumulate / this->length - this->average_x * this->average_y;
-            long double slope = covariance / variance;
-            long double intercept = this->average_y - slope * this->average_x;
+            double variance = (double) this->accumulate_square / this->length - this->average_x * this->average_x;
+            double covariance = (double) this->accumulate / this->length - this->average_x * this->average_y;
+            double slope = covariance / variance;
+            double intercept = this->average_y - slope * this->average_x;
 
             Line n_line(slope, intercept);
             if (this->__error_bound_verify(n_line)) {

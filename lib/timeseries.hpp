@@ -9,10 +9,10 @@ class Data {};
 class Univariate : public Data {
     private:
         std::time_t time;
-        long double value;
+        double value;
     
     public:
-        Univariate(std::time_t time, long double val) {
+        Univariate(std::time_t time, double val) {
             this->time = time;
             this->value = val;
         }
@@ -25,7 +25,7 @@ class Univariate : public Data {
             return std::localtime(&this->time);
         }
 
-        long double get_value() const {
+        double get_value() const {
             return this->value;
         }
 };
