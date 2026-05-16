@@ -1,5 +1,6 @@
 #ifndef ALGEBRAIC_CONVEX_HPP
 #define ALGEBRAIC_CONVEX_HPP
+#define EPS 0.000001
 
 #include <vector>
 #include "algebraic/function.hpp"
@@ -22,15 +23,15 @@ class UpperHull {
 
             while (this->points.size() > 2) {
                 int size = this->points.size();
-                Point2D& p1 = point;
-                Point2D p2 = this->points.at(size-2);
-                Point2D p3 = this->points.at(size-3);
+                Point2D& p1 = this->points[size-1];
+                Point2D& p2 = this->points[size-2];
+                Point2D& p3 = this->points[size-3];
 
-                Line line = Line::line(p1, p3);
-                if (std::abs(line.subs(p2.x) - p2.y) < 0.00001 || line.subs(p2.x) > p2.y) {
-                    this->points.erase(this->points.begin()+size-2);
-                }
-                else {
+                double cross = (p2.x - p3.x)*(p1.y - p3.y) - (p2.y - p3.y)*(p1.x - p3.x);
+                if (cross >= -EPS) { 
+                    this->points[size-2] = points[size-1];
+                    this->points.pop_back();       
+                } else {
                     break;
                 }
             }
@@ -40,12 +41,12 @@ class UpperHull {
             this->points.insert(this->points.begin(), point);
 
             while (this->points.size() > 2) {
-                Point2D& p1 = point;
-                Point2D p2 = this->points.at(1);
-                Point2D p3 = this->points.at(2);
+                Point2D& p1 = this->points[0];
+                Point2D& p2 = this->points[1];
+                Point2D& p3 = this->points[2];
 
-                Line line = Line::line(p1, p3);
-                if (std::abs(line.subs(p2.x) - p2.y) < 0.00001 || line.subs(p2.x) > p2.y) {
+                double cross = (p2.x - p3.x)*(p1.y - p3.y) - (p2.y - p3.y)*(p1.x - p3.x);
+                if (cross >= -EPS) {
                     this->points.erase(this->points.begin()+1);
                 }
                 else {
@@ -54,8 +55,8 @@ class UpperHull {
             }
         }
 
-        Point2D at(int i) {
-            return this->points.at(i);
+        Point2D& at(int i) {
+            return this->points[i];
         }
 
         int size() {
@@ -66,8 +67,8 @@ class UpperHull {
             this->points.clear();
         }
 
-        Point2D pop() {
-            Point2D p = this->points.back();
+        Point2D& pop() {
+            Point2D& p = this->points.back();
             this->points.pop_back();
 
             return p;
@@ -100,15 +101,15 @@ class LowerHull {
 
             while (this->points.size() > 2) {
                 int size = this->points.size();
-                Point2D p1 = this->points.at(size-1);
-                Point2D p2 = this->points.at(size-2);
-                Point2D p3 = this->points.at(size-3);
+                Point2D& p1 = this->points[size-1];
+                Point2D& p2 = this->points[size-2];
+                Point2D& p3 = this->points[size-3];
 
-                Line line = Line::line(p1, p3);
-                if (std::abs(p2.y - line.subs(p2.x)) < 0.00001 || p2.y > line.subs(p2.x)) {
-                    this->points.erase(this->points.begin()+size-2);
-                }
-                else {
+                double cross = (p2.x - p3.x)*(p1.y - p3.y) - (p2.y - p3.y)*(p1.x - p3.x);
+                if (cross <= EPS) { 
+                    this->points[size-2] = points[size-1]; 
+                    this->points.pop_back();         
+                } else {
                     break;
                 }
             }
@@ -118,12 +119,12 @@ class LowerHull {
             this->points.insert(this->points.begin(), point);
 
             while (this->points.size() > 2) {
-                Point2D p1 = this->points.at(0);
-                Point2D p2 = this->points.at(1);
-                Point2D p3 = this->points.at(2);
+                Point2D& p1 = this->points[0];
+                Point2D& p2 = this->points[1];
+                Point2D& p3 = this->points[2];
 
-                Line line = Line::line(p1, p3);
-                if (std::abs(p2.y - line.subs(p2.x)) < 0.00001 || p2.y > line.subs(p2.x)) {
+                double cross = (p2.x - p3.x)*(p1.y - p3.y) - (p2.y - p3.y)*(p1.x - p3.x);
+                if (cross <= EPS) {
                     this->points.erase(this->points.begin()+1);
                 }
                 else {
@@ -132,8 +133,8 @@ class LowerHull {
             }
         }
 
-        Point2D at(int i) {
-            return this->points.at(i);
+        Point2D& at(int i) {
+            return this->points[i];
         }
 
         int size() {
@@ -144,8 +145,8 @@ class LowerHull {
             this->points.clear();
         }
 
-        Point2D pop() {
-            Point2D p = this->points.back();
+        Point2D& pop() {
+            Point2D& p = this->points.back();
             this->points.pop_back();
 
             return p;
@@ -171,7 +172,7 @@ class ConvexHull {
             this->upper.append(point);
         }
 
-        Point2D at(int i) {
+        Point2D& at(int i) {
             if (i < this->lower.size()) {
                 return this->lower.at(i);
             }
@@ -187,7 +188,7 @@ class ConvexHull {
             return Line::line(p1, p2);
         }
 
-        Point2D at_cw(int i) {
+        Point2D& at_cw(int i) {
             i = i % this->size();
             if (i < this->upper.size()) {
                 return this->upper.at(i);
@@ -197,7 +198,7 @@ class ConvexHull {
             }
         }
 
-        Point2D at_ccw(int i) {
+        Point2D& at_ccw(int i) {
             i = i % this->size();
             if (i < this->lower.size()) {
                 return this->lower.at(i);
