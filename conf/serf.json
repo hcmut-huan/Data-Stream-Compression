@@ -5,7 +5,7 @@
     "interval": 1,
     "algorithm": {
         "name": "serf",
-        "error": 0.871,
+        "error": 4.355,
         "size": 1000,
         "mode": "xor"
     }

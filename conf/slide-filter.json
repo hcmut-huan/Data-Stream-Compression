@@ -5,6 +5,6 @@
     "interval": 1,
     "algorithm": {
         "name": "slide-filter",
-        "error": 3.932
+        "error": 4.355
     }
 }
