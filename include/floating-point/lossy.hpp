@@ -8,7 +8,6 @@ namespace Camel {
 
     inline float END_SIGNAL = INFINITY;
     inline int END_DIFF = 65535;
-    inline double EPSILON = 0.0000001;
 
     inline int MVALUEBITS[4] = {3, 5, 7, 10};
     inline int THRESHOLDS[4] = {5, 25, 125, 625};

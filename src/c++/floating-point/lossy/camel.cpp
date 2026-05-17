@@ -138,7 +138,7 @@ namespace Camel {
         int decimal_value = 0;
 
         value = std::abs(value);
-        while (std::abs(value * factor - std::round(value * factor)) > Camel::EPSILON) {
+        while (std::abs(value * factor - std::round(value * factor)) > EPS) {
             factor *= 10.0;
             decimal_count++;
         }

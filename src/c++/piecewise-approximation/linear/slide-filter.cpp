@@ -34,7 +34,7 @@ namespace SlideFilter {
     double Compression::__checkConnected() {
         double t_j_k = this->pivot->x;
         Point2D prev = Line::intersection(*this->prev_l, *this->prev_u);
-        if (std::abs(this->u_line->get_slope() - this->l_line->get_slope()) < 0.0000001) {
+        if (std::abs(this->u_line->get_slope() - this->l_line->get_slope()) < EPS) {
             Point2D p = Line::intersection(*this->u_line, *this->prev_g);
             
             if (p.x < t_j_k && p.x > prev.x 
@@ -57,9 +57,9 @@ namespace SlideFilter {
                     double d_i = Line::intersection(*this->prev_g, s).x;     // d_i^k
                     double max_c_vs_d = (c_i > d_i) ? c_i : d_i;
 
-                    if ((c_i - f_i_k > 0.0000001 && d_i - f_i_k > 0.0000001) || max_c_vs_d - p.x > 0.0000001 || f_i_k - p.x > 0.0000001) return -1;
-                    else if (c_i - f_i_k > 0.0000001 && d_i - prev.x > 0.0000001) return (d_i + f_i_k) / 2;
-                    else if (d_i - f_i_k > 0.0000001 && c_i - prev.x > 0.0000001) return (c_i + f_i_k) / 2;
+                    if ((c_i - f_i_k > EPS && d_i - f_i_k > EPS) || max_c_vs_d - p.x > EPS || f_i_k - p.x > EPS) return -1;
+                    else if (c_i - f_i_k > EPS && d_i - prev.x > EPS) return (d_i + f_i_k) / 2;
+                    else if (d_i - f_i_k > EPS && c_i - prev.x > EPS) return (c_i + f_i_k) / 2;
                     else return (max_c_vs_d + f_i_k) / 2;            
                 }
             }
@@ -74,9 +74,9 @@ namespace SlideFilter {
                     double d_i = Line::intersection(*this->prev_g, q).x;   // d_i^k'
                     double max_c_vs_d = (c_i > d_i) ? c_i : d_i;
 
-                    if ((c_i - f_i_k > 0.0000001 && d_i - f_i_k > 0.0000001) || max_c_vs_d - p.x > 0.0000001 || f_i_k - p.x > 0.0000001) return -1;
-                    else if (c_i - f_i_k > 0.0000001 && d_i - prev.x > 0.0000001) return (d_i + f_i_k) / 2;
-                    else if (d_i - f_i_k > 0.0000001 && c_i - prev.x > 0.0000001) return (c_i + f_i_k) / 2;
+                    if ((c_i - f_i_k > EPS && d_i - f_i_k > EPS) || max_c_vs_d - p.x > EPS || f_i_k - p.x > EPS) return -1;
+                    else if (c_i - f_i_k > EPS && d_i - prev.x > EPS) return (d_i + f_i_k) / 2;
+                    else if (d_i - f_i_k > EPS && c_i - prev.x > EPS) return (c_i + f_i_k) / 2;
                     else return (max_c_vs_d + f_i_k) / 2;         
                 }
             }
@@ -257,7 +257,7 @@ namespace SlideFilter {
             delete this->prev_end;
             this->prev_end = curr_end;
 
-            for (long i=this->index; curr_end->x - i > 0.0000001 || std::abs(curr_end->x - i) < 0.0000001; i++) {
+            for (long i=this->index; curr_end->x - i > EPS || std::abs(curr_end->x - i) < EPS; i++) {
                 if (base_obj == nullptr) {
                     base_obj = new CSVObj;
                     base_obj->pushData(std::to_string(this->basetime + i * interval));

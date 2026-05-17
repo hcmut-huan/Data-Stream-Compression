@@ -1,0 +1,13 @@
+{
+    "data": "<DATA>",
+    "compress": "out/compress/<NAME>_ioriented-pla.bin",
+    "decompress": "out/decompress/<NAME>_ioriented-pla.csv",
+    "interval": <INTERVAL>,
+    "algorithm": {
+        "name": "ioriented-pla",
+        "error": <ERROR>,
+        "scale": <SCALE>,
+        "up": <UP_SHIFT>,
+        "down": <DOWN_SHIFT>
+    }
+}

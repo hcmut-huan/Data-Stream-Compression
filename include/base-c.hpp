@@ -1,5 +1,6 @@
 #ifndef BASE_COMPRESSION_HPP
 #define BASE_COMPRESSION_HPP
+#define EPS 0.0000001
 
 #include <map>
 #include <bit>

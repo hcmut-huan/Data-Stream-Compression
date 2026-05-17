@@ -20,13 +20,13 @@ namespace SemiOptimalPLA {
         Point2D inter = Line::intersection(*line, *this->extrm);
         long start = this->status == -1 ? this->l_cvx.at(0).x : this->u_cvx.at(0).x;
 
-        if (inter.x > this->t_end + 1 || (std::abs(inter.x - start) > 0.0000001 && inter.x < start)) return false;
+        if (inter.x > this->t_end + 1 || (std::abs(inter.x - start) > EPS && inter.x < start)) return false;
         else if (inter.x > this->t_end) return true;
 
         for (int i=window.size()-1; i>=0; i--) {
             Point2D p = this->window.at(i);
             if (p.x < inter.x) break;
-            if (std::abs(line->subs(p.x) - p.y) - bound > 0.0000001) {
+            if (std::abs(line->subs(p.x) - p.y) - bound > EPS) {
                 return false;
             }
         }
@@ -102,8 +102,8 @@ namespace SemiOptimalPLA {
         Point2D p = prev_seg->popLast(false);
         this->t_start = p.x;
 
-        bool update_l = this->window.size() == 1 ? true : this->status == -1 && this->l_line->subs(p.x) - p.y - error > 0.0000001;
-        bool update_u = this->window.size() == 1 ? true : this->status == 1 && p.y - error - this->u_line->subs(p.x) > 0.0000001;
+        bool update_l = this->window.size() == 1 ? true : this->status == -1 && this->l_line->subs(p.x) - p.y - error > EPS;
+        bool update_u = this->window.size() == 1 ? true : this->status == 1 && p.y - error - this->u_line->subs(p.x) > EPS;
 
         if (update_u) {
             int index = -1;
@@ -187,13 +187,13 @@ namespace SemiOptimalPLA {
             this->l_mapper.push_back(2);
         }
         else {
-            if ((this->l_line->subs(p.x) - p.y - error) > 0.0000001) {
+            if ((this->l_line->subs(p.x) - p.y - error) > EPS) {
                 this->t_end = p.x - 1;
                 this->status = -1;
                 this->is_complete = true;
                 return;
             }
-            else if (p.y - error - this->u_line->subs(p.x) > 0.0000001) {
+            else if (p.y - error - this->u_line->subs(p.x) > EPS) {
                 this->t_end = p.x - 1;
                 this->status = 1;
                 this->is_complete = true;

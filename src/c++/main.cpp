@@ -5,7 +5,6 @@
 #include "piecewise-approximation/polynomial.hpp"
 #include "model-selection/model-selection.hpp"
 
-
 using namespace std;
 using namespace std::chrono;
 

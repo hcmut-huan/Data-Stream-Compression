@@ -56,8 +56,8 @@ namespace AdaptPPA {
             this->l_cvx.append(Point2D(p.x, p.y + error));
         }
         else {
-            if (this->l_line->subs(p.x) - p.y - error > 0.0000001 
-                || p.y - error - this->u_line->subs(p.x) > 0.0000001) 
+            if (this->l_line->subs(p.x) - p.y - error > EPS 
+                || p.y - error - this->u_line->subs(p.x) > EPS) 
             {
                 this->p_end = new Point2D(p.x - 1, p.y);
                 this->is_complete = true;

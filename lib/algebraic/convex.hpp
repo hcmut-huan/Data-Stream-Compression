@@ -1,6 +1,5 @@
 #ifndef ALGEBRAIC_CONVEX_HPP
 #define ALGEBRAIC_CONVEX_HPP
-#define EPS 0.000001
 
 #include <vector>
 #include "algebraic/function.hpp"

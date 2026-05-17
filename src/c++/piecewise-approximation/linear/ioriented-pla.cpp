@@ -3,7 +3,7 @@
 namespace IOrientedPLA {
 
     bool Compression::__feasible_cone(BinObj* obj) {
-        if (this->u_line->get_slope() == this->l_line->get_slope()) return false;
+        if (std::abs(this->u_line->get_slope()-this->l_line->get_slope()) < EPS) return false;
 
         Point2D p = Line::intersection(*this->u_line, *this->l_line);
         long u_left = static_cast<long>(std::ceil(this->u_line->get_intercept()));
@@ -35,24 +35,24 @@ namespace IOrientedPLA {
         }   
 
         long root = this->length;
-        if (std::abs(this->u_line->get_slope()) < 0.0000001) {
+        if (std::abs(this->u_line->get_slope()) < EPS) {
             if (this->l_line->get_root() > p.x) {
                 root = static_cast<long>(std::ceil(this->l_line->get_root()));
-                if (std::abs(root - p.x) < 0.0000001) root++;
+                if (std::abs(root - p.x) < EPS) root++;
             }
             else {
                 root = static_cast<long>(std::floor(this->l_line->get_root()));
-                if (std::abs(root - p.x) < 0.0000001) root--;
+                if (std::abs(root - p.x) < EPS) root--;
             }
         }
-        else if (std::abs(this->l_line->get_slope()) < 0.0000001) {
+        else if (std::abs(this->l_line->get_slope()) < EPS) {
             if (this->u_line->get_root() > p.x) {
                 root = static_cast<long>(std::ceil(this->u_line->get_root()));
-                if (std::abs(root - p.x) < 0.0000001) root++;
+                if (std::abs(root - p.x) < EPS) root++;
             }
             else {
                 root = static_cast<long>(std::floor(this->u_line->get_root()));
-                if (std::abs(root - p.x) < 0.0000001) root--;
+                if (std::abs(root - p.x) < EPS) root--;
             }
         }
         else {
@@ -63,7 +63,7 @@ namespace IOrientedPLA {
 
             if (this->u_line->get_slope() * this->l_line->get_slope() < 0) {
                 root = static_cast<long>(std::floor(l_root));
-                if (std::abs(root - p.x) < 0.0000001) root--;
+                if (std::abs(root - p.x) < EPS) root--;
             }
             else {
                 u_root = static_cast<long>(std::floor(u_root));
@@ -71,7 +71,7 @@ namespace IOrientedPLA {
                 
                 if (u_root >= l_root) {
                     root = l_root;
-                    if (std::abs(root - p.x) < 0.0000001) {
+                    if (std::abs(root - p.x) < EPS) {
                         if (root + 1 <= u_root) root++;
                         else root = this->length;
                     }
@@ -234,7 +234,7 @@ namespace IOrientedPLA {
             this->l_cvx.append(Point2D(p.x, p.y + this->error));
         }
         else {
-            if (this->l_line->subs(p.x) - p.y - this->error > 0.0000001 || p.y - this->error - this->u_line->subs(p.x) > 0.0000001) {
+            if (this->l_line->subs(p.x) - p.y - this->error > EPS || p.y - this->error - this->u_line->subs(p.x) > EPS) {
                 this->length--;
                 this->yield();
                 
