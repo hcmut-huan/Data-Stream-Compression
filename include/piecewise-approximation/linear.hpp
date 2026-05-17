@@ -363,7 +363,7 @@ namespace SemiOptimalPLA {
     // Source paper: An Optimal Online Semi-Connected PLA Algorithm With Maximum Error Bound
     // Source path: src/piecewise-approximation/linear/semi-optimal-pla.cpp
     class OptimalPLA {
-        public:
+        private:
             UpperHull u_cvx;
             LowerHull l_cvx;
             Point2D* pivot = nullptr;

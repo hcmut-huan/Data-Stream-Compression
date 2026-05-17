@@ -126,7 +126,7 @@ namespace SmartGridCompression {
 
     // Linear approximate    
     class LinearModel : public Model {
-        public:
+        private:
             Line* line;
             ConvexHull cvx;
 
