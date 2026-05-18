@@ -120,11 +120,19 @@ namespace IOrientedPLA {
         if (u_left >= l_left && u_right >= l_right) {
             unsigned long value_1 = ZigZagEncoding::encode(u_left);
             unsigned long value_2 = ZigZagEncoding::encode(u_right);
-            long embedded = this->length << 3 | 4;
-
-            obj->put(VariableByteEncoding::encode(embedded));
-            obj->put(VariableByteEncoding::encode(value_1));
-            obj->put(VariableByteEncoding::encode(value_2));
+            
+            if (value_1 < 15 && value_2 < 15) {
+                // Elias Gamma Encoding is more efficient
+                obj->put(VariableByteEncoding::encode(this->length << 3 | 7));
+                EliasGammaEncoding::encode(value_1 + 1, obj);
+                EliasGammaEncoding::encode(value_2 + 1, obj);
+            }
+            else {
+                // Variable Byte Encoding is more efficient
+                obj->put(VariableByteEncoding::encode(this->length << 3 | 4));
+                obj->put(VariableByteEncoding::encode(value_1));
+                obj->put(VariableByteEncoding::encode(value_2));
+            }
 
             return true;
         }
@@ -371,6 +379,15 @@ namespace IOrientedPLA {
                 slp = line.get_slope();
                 intercept = line.get_intercept();
             }
+        }
+        else if (flag == 7) {
+            long value_1 = ZigZagEncoding::decode(EliasGammaEncoding::decode(compress_data) - 1);
+            long value_2 = ZigZagEncoding::decode(EliasGammaEncoding::decode(compress_data) - 1);
+            Line line = Line::line(Point2D(0, (double) value_1 / this->scale), Point2D(length, (double) value_2 / this->scale));
+        
+            slp = line.get_slope();
+            intercept = line.get_intercept();
+            compress_data->flushBits();
         }
 
         for (int i=0; i<length; i++) {
