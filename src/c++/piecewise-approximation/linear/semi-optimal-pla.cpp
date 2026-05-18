@@ -20,10 +20,10 @@ namespace SemiOptimalPLA {
         Point2D inter = Line::intersection(*line, *this->extrm);
         long start = this->status == -1 ? this->l_cvx.at(0).x : this->u_cvx.at(0).x;
 
-        if (inter.x > this->t_end + 1 || (std::abs(inter.x - start) > EPS && inter.x < start)) return false;
+        if (inter.x > this->t_end + 1 || inter.x + EPS < start) return false;
         else if (inter.x > this->t_end) return true;
 
-        for (int i=window.size()-1; i>=0; i--) {
+        for (int i=this->window.size()-1; i>=0; i--) {
             Point2D p = this->window.at(i);
             if (p.x < inter.x) break;
             if (std::abs(line->subs(p.x) - p.y) - bound > EPS) {
@@ -180,8 +180,8 @@ namespace SemiOptimalPLA {
             this->l_cvx.append(Point2D(p.x, p.y + error));
             this->u_points.push_back(Point2D(p.x, p.y - error));
             this->l_points.push_back(Point2D(p.x, p.y + error));
-            this->u_lines.push_back(std::make_pair(p.x, Line(this->u_line->get_slope(), this->u_line->get_intercept())));
-            this->l_lines.push_back(std::make_pair(p.x, Line(this->l_line->get_slope(), this->l_line->get_intercept())));
+            this->u_lines.emplace_back(p.x, Line(this->u_line->get_slope(), this->u_line->get_intercept()));
+            this->l_lines.emplace_back(p.x, Line(this->l_line->get_slope(), this->l_line->get_intercept()));
 
             this->u_mapper.push_back(2);
             this->l_mapper.push_back(2);
@@ -241,12 +241,12 @@ namespace SemiOptimalPLA {
                 if (update_u) {
                     this->l_cvx.append(Point2D(p.x, p.y + error));
                     this->l_points.push_back(Point2D(p.x, p.y + error));
-                    this->u_lines.push_back(std::make_pair(p.x, Line(this->u_line->get_slope(), this->u_line->get_intercept())));
+                    this->u_lines.emplace_back(p.x, Line(this->u_line->get_slope(), this->u_line->get_intercept()));
                 }
                 if (update_l) {
                     this->u_cvx.append(Point2D(p.x, p.y - error));
                     this->u_points.push_back(Point2D(p.x, p.y - error));
-                    this->l_lines.push_back(std::make_pair(p.x, Line(this->l_line->get_slope(), this->l_line->get_intercept())));
+                    this->l_lines.emplace_back(p.x, Line(this->l_line->get_slope(), this->l_line->get_intercept()));
                 }
 
                 this->u_mapper.push_back(this->u_cvx.size());
