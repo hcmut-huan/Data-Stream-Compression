@@ -17,8 +17,9 @@ class UpperHull {
             }
         }
 
-        void append(Point2D point) {
+        void append(Point2D point, bool triangle_check = true) {
             this->points.push_back(point);
+            if (!triangle_check) return;
 
             while (this->points.size() > 2) {
                 int size = this->points.size();
@@ -36,8 +37,9 @@ class UpperHull {
             }
         }
 
-        void append_backward(Point2D point) {
+        void append_backward(Point2D point, bool triangle_check = true) {
             this->points.insert(this->points.begin(), point);
+            if (!triangle_check) return;
 
             while (this->points.size() > 2) {
                 Point2D& p1 = this->points[0];
@@ -95,8 +97,9 @@ class LowerHull {
             }
         }
             
-        void append(Point2D point) {
+        void append(Point2D point, bool triangle_check = true) {
             this->points.push_back(point);
+            if (!triangle_check) return;
 
             while (this->points.size() > 2) {
                 int size = this->points.size();
@@ -114,8 +117,9 @@ class LowerHull {
             }
         }
 
-        void append_backward(Point2D point) {
+        void append_backward(Point2D point, bool triangle_check = true) {
             this->points.insert(this->points.begin(), point);
+            if (!triangle_check) return;
 
             while (this->points.size() > 2) {
                 Point2D& p1 = this->points[0];
