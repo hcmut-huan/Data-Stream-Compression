@@ -101,7 +101,7 @@ Statistical output of each execution is appended to the ``experiments.csv`` file
 |:-------------|:-----------|
 | ``dataset`` | Dataset used during execution. |
 | ``algorithm`` | Algorithm used for compression and decompression. |
-| ``error bound`` | Maximum allowable individual error threshold. |
+| ``error bound/buffer size`` | Maximum allowable individual error threshold in case of **lossy** algorithms. Size of buffer in each serialization in case of **lossless** algorithms. |
 | ``Compression ratio`` | Ratio of original data size to compressed data size. |
 | ``mse`` | Mean squared error of the reconstructed data. |
 | ``rmse`` | Root mean squared error of the reconstructed data. |
