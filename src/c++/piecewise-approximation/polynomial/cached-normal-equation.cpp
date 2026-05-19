@@ -49,7 +49,7 @@ namespace CachedNormalEquation {
 
         Polynomial* model = new Polynomial(degree, coeffs);
         
-        delete coeffs;
+        delete[] coeffs;
         return model;
     }
 

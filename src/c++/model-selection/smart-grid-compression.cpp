@@ -272,10 +272,10 @@ namespace SmartGridCompression {
                     coefficients[this->degree-i] = x(i);
                 }
 
-                delete this->polynomial;
-                this->polynomial = new Polynomial(this->degree, coefficients);
-
+                this->polynomial->set_coefficient<float>(coefficients);
                 this->length = segment.size();
+
+                delete[] coefficients;
                 return true;
             }
         }
@@ -314,6 +314,8 @@ namespace SmartGridCompression {
 
                 this->polynomial = new Polynomial(this->degree, coefficients);
                 this->length = segment.size();
+                
+                delete[] coefficients;
                 return true;
             }
             

@@ -34,11 +34,9 @@ namespace ConnIPLA {
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
                         if (line.get_slope() < min_slp) {
-                            min_slp = line.get_slope();
                             index = i;
-
-                            delete this->u_line;
-                            this->u_line = new Line(line.get_slope(), line.get_intercept());
+                            min_slp = line.get_slope();
+                            this->u_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
                     this->u_cvx.erase_from_begin(index);
@@ -50,11 +48,9 @@ namespace ConnIPLA {
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
                         if (line.get_slope() > max_slp) {
-                            max_slp = line.get_slope();
                             index = i;
-
-                            delete this->l_line;
-                            this->l_line = new Line(line.get_slope(), line.get_intercept());
+                            max_slp = line.get_slope();
+                            this->l_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
                     this->l_cvx.erase_from_begin(index);
@@ -81,12 +77,12 @@ namespace ConnIPLA {
             else {
                 if (p.y + error < this->u_line->subs(p.x)) {
                     Line u_line = Line::line(*this->pivot, Point2D(p.x, p.y + error));
-                    this->u_line = new Line(u_line.get_slope(), u_line.get_intercept());
+                    this->u_line->set(u_line.get_slope(), u_line.get_intercept());
                 }
                 
                 if (p.y - error > this->l_line->subs(p.x)) {
                     Line l_line = Line::line(*this->pivot, Point2D(p.x, p.y - error));
-                    this->l_line = new Line(l_line.get_slope(), l_line.get_intercept());
+                    this->l_line->set(l_line.get_slope(), l_line.get_intercept());
                 }
             }
         }

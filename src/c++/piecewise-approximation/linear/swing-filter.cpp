@@ -71,14 +71,12 @@ namespace SwingFilter {
                 this->curr_end = nullptr;
 
                 delete this->pivot;
-                delete this->u_line;
-                delete this->l_line;
-
                 this->pivot = new Point2D(p.x-1, line.subs(p.x-1));
+                
                 Line u_line = Line::line(*this->pivot, Point2D(p.x, p.y+this->error));
                 Line l_line = Line::line(*this->pivot, Point2D(p.x, p.y-this->error));
-                this->u_line = new Line(u_line.get_slope(), u_line.get_intercept());
-                this->l_line = new Line(l_line.get_slope(), l_line.get_intercept());
+                this->u_line->set(u_line.get_slope(), u_line.get_intercept());
+                this->l_line->set(l_line.get_slope(), l_line.get_intercept());
 
                 this->A_den = 0;
                 this->A_num = 0;

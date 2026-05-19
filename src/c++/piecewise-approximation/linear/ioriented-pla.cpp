@@ -100,7 +100,7 @@ namespace IOrientedPLA {
         for (int i=1; i<this->l_cvx.size(); i++) {
             Point2D p = this->l_cvx.at(i);
             double intercept = p.y - u_bound.get_slope() * p.x;
-            if (intercept < u_bound.get_intercept()) u_bound.set_intercept(intercept);
+            if (intercept < u_bound.get_intercept()) u_bound.set(u_bound.get_slope(), intercept);
             else break;
         }
         
@@ -108,7 +108,7 @@ namespace IOrientedPLA {
         for (int i=1; i<this->u_cvx.size(); i++) {
             Point2D p = this->u_cvx.at(i);
             double intercept = p.y - l_bound.get_slope() * p.x;
-            if (intercept > l_bound.get_intercept()) l_bound.set_intercept(intercept);
+            if (intercept > l_bound.get_intercept()) l_bound.set(l_bound.get_slope(), intercept);
             else break;
         }
 
@@ -266,12 +266,11 @@ namespace IOrientedPLA {
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + this->error));
                         if (line.get_slope() < min_slp) {
-                            min_slp = line.get_slope();
                             index = i;
+                            min_slp = line.get_slope();
+                            this->u_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
-                    Line line = Line::line(this->u_cvx.at(index), Point2D(p.x, p.y + this->error));
-                    delete this->u_line; this->u_line = new Line(line.get_slope(), line.get_intercept());
                     this->u_cvx.erase_from_begin(index);
                 }
                 if (update_l) {
@@ -281,12 +280,11 @@ namespace IOrientedPLA {
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - this->error));
                         if (line.get_slope() > max_slp) {
-                            max_slp = line.get_slope();
                             index = i;
+                            max_slp = line.get_slope();
+                            this->l_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
-                    Line line = Line::line(this->l_cvx.at(index), Point2D(p.x, p.y - this->error));
-                    delete this->l_line; this->l_line = new Line(line.get_slope(), line.get_intercept());
                     this->l_cvx.erase_from_begin(index);
                 }
 

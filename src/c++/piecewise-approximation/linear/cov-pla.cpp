@@ -70,9 +70,7 @@ namespace CovariancePLA {
                 this->accumulate = 0;
                 this->accumulate_square = 0;
                 
-                delete this->line;
-                this->line = new Line(0, p.y);
-
+                this->line->set(0, p.y);
                 this->u_cvx.clear(); this->u_cvx.append(Point2D(0, p.y - this->error));
                 this->l_cvx.clear(); this->l_cvx.append(Point2D(0, p.y + this->error));
             }

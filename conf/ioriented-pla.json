@@ -1,11 +1,11 @@
 {
-    "data": "data/Fungi.csv",
-    "compress": "out/compress/Fungi_ioriented-pla.bin",
-    "decompress": "out/decompress/Fungi_ioriented-pla.csv",
+    "data": "data/biomedical/MedicalImages.csv",
+    "compress": "out/compress/MedicalImages_ioriented-pla.bin",
+    "decompress": "out/decompress/MedicalImages_ioriented-pla.csv",
     "interval": 1,
     "algorithm": {
         "name": "ioriented-pla",
-        "error": 4.355,
+        "error": 0.011,
         "scale": 1,
         "up": 0,
         "down": 0

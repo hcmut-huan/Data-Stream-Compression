@@ -1,11 +1,11 @@
 {
-    "data": "data/Fungi.csv",
-    "compress": "out/compress/Fungi_chimp.bin",
-    "decompress": "out/decompress/Fungi_chimp.csv",
+    "data": "data/scientific-research/StarLightCurves.csv",
+    "compress": "out/compress/StarLightCurves_chimp.bin",
+    "decompress": "out/decompress/StarLightCurves_chimp.csv",
     "interval": 1,
     "algorithm": {
         "name": "chimp",
         "size": 1000,
-        "mode": "basic"
+        "mode": "128"
     }
 }

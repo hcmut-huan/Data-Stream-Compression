@@ -1,7 +1,7 @@
 {
-    "data": "data/Fungi.csv",
-    "compress": "out/compress/Fungi_elf.bin",
-    "decompress": "out/decompress/Fungi_elf.csv",
+    "data": "data/scientific-research/StarLightCurves.csv",
+    "compress": "out/compress/StarLightCurves_elf.bin",
+    "decompress": "out/decompress/StarLightCurves_elf.csv",
     "interval": 1,
     "algorithm": {
         "name": "elf",

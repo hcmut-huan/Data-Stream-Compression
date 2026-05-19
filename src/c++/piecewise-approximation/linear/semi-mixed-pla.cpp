@@ -62,18 +62,16 @@ namespace SemiMixedPLA {
             
             if (last.x == this->l_lines.back().first) {
                 update_l = true;
-                delete this->l_line;
                 this->l_lines.pop_back();
-                this->l_line = new Line(
+                this->l_line->set(
                     this->l_lines.back().second.get_slope(),
                     this->l_lines.back().second.get_intercept()
                 );
             }
             if (last.x == this->u_lines.back().first) {
                 update_u = true;
-                delete this->u_line;
                 this->u_lines.pop_back();
-                this->u_line = new Line(
+                this->u_line->set(
                     this->u_lines.back().second.get_slope(),
                     this->u_lines.back().second.get_intercept()
                 );
@@ -82,8 +80,8 @@ namespace SemiMixedPLA {
             return std::make_pair(last, update_u | update_l);
         }
         else {
-            delete this->u_line; this->u_line = new Line(INFINITY, 0);
-            delete this->l_line; this->l_line = new Line(-INFINITY, 0);
+            this->u_line->set(INFINITY, 0);
+            this->l_line->set(-INFINITY, 0);
             this->u_cvx.clear(); this->u_cvx.append(this->u_points.at(0));
             this->l_cvx.clear(); this->l_cvx.append(this->l_points.at(0));
 
@@ -111,8 +109,7 @@ namespace SemiMixedPLA {
                 Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
                 if (line.get_slope() < this->u_line->get_slope()) {
                     index = i;
-                    delete this->u_line;
-                    this->u_line = new Line(line.get_slope(), line.get_intercept());
+                    this->u_line->set(line.get_slope(), line.get_intercept());
                 }
             }
             if (index >= 0 && index != this->l_cvx.size() - 1) this->l_cvx.erase_from_end(index + 1);
@@ -124,8 +121,7 @@ namespace SemiMixedPLA {
                 Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
                 if (line.get_slope() > this->l_line->get_slope()) {
                     index = i;
-                    delete this->l_line;
-                    this->l_line = new Line(line.get_slope(), line.get_intercept());
+                    this->l_line->set(line.get_slope(), line.get_intercept());
                 }
             }
 
@@ -212,11 +208,9 @@ namespace SemiMixedPLA {
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
                         if (line.get_slope() < min_slp) {
-                            min_slp = line.get_slope();
                             index = i;
-
-                            delete this->u_line;
-                            this->u_line = new Line(line.get_slope(), line.get_intercept());
+                            min_slp = line.get_slope();
+                            this->u_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
                     this->u_cvx.erase_from_begin(index);
@@ -228,11 +222,9 @@ namespace SemiMixedPLA {
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
                         if (line.get_slope() > max_slp) {
-                            max_slp = line.get_slope();
                             index = i;
-
-                            delete this->l_line;
-                            this->l_line = new Line(line.get_slope(), line.get_intercept());
+                            max_slp = line.get_slope();
+                            this->l_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
                     this->l_cvx.erase_from_begin(index);

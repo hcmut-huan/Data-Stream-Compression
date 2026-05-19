@@ -73,11 +73,9 @@ namespace AdaptPPA {
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + error));
                         if (line.get_slope() < min_slp) {
-                            min_slp = line.get_slope();
                             index = i;
-
-                            delete this->u_line;
-                            this->u_line = new Line(line.get_slope(), line.get_intercept());
+                            min_slp = line.get_slope();
+                            this->u_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
 
@@ -90,11 +88,9 @@ namespace AdaptPPA {
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - error));
                         if (line.get_slope() > max_slp) {
-                            max_slp = line.get_slope();
                             index = i;
-
-                            delete this->l_line;
-                            this->l_line = new Line(line.get_slope(), line.get_intercept());
+                            max_slp = line.get_slope();
+                            this->l_line->set(line.get_slope(), line.get_intercept());
                         }
                     }
 

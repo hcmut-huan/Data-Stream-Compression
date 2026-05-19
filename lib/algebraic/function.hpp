@@ -40,8 +40,9 @@ class Line {
             return this->slope * x + this->intercept;
         }
 
-        void set_slope(double slope) {
+        void set(double slope, double intercept) {
             this->slope = slope;
+            this->intercept = intercept;
         }
 
         double get_slope() {
@@ -50,10 +51,6 @@ class Line {
 
         double get_intercept() {
             return this->intercept;
-        }
-
-        void set_intercept(double intercept) {
-            this->intercept = intercept;
         }
 
         double get_root(double shift = 0, double scale = 1) {
@@ -127,6 +124,14 @@ class Polynomial {
             }
 
             return result;
+        }
+
+        template <typename T>
+        void set_coefficient(T* coeffs, bool reverse = false) {
+            for (int i = 0; i <= this->degree; i++) {
+                int idx = reverse ? this->degree - i : i;
+                this->coefficients[idx] = static_cast<double>(coeffs[i]);
+            }
         }
 
         double get_coefficient(int degree) {

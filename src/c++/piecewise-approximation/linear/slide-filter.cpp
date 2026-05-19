@@ -130,9 +130,7 @@ namespace SlideFilter {
 
                 this->prev_end->x = this->pivot->x;
                 this->prev_end->y = g_k.subs(this->pivot->x);
-
-                delete this->prev_g;
-                this->prev_g = new Line(g_k.get_slope(), g_k.get_intercept());
+                this->prev_g->set(g_k.get_slope(), g_k.get_intercept());
             }
             else {
                 Point2D p = Line::intersection(*this->u_line, *this->l_line);
@@ -144,9 +142,7 @@ namespace SlideFilter {
 
                 this->prev_end->x = curr_end.x;
                 this->prev_end->y = curr_end.y;
-
-                delete this->prev_g;
-                this->prev_g = new Line(g_k.get_slope(), g_k.get_intercept());
+                this->prev_g->set(g_k.get_slope(), g_k.get_intercept());
             }
         }
 
@@ -201,8 +197,7 @@ namespace SlideFilter {
 
                         Line l = Line::line(Point2D(cvx_p.x, cvx_p.y+this->error), Point2D(p.x, p.y-this->error));
                         if (l.get_slope() > this->l_line->get_slope()) {
-                            delete this->l_line;
-                            this->l_line = new Line(l.get_slope(), l.get_intercept());
+                            this->l_line->set(l.get_slope(), l.get_intercept());
                         }
                     }
                 }
@@ -214,8 +209,7 @@ namespace SlideFilter {
 
                         Line l = Line::line(Point2D(cvx_p.x, cvx_p.y-this->error), Point2D(p.x, p.y+this->error));
                         if (l.get_slope() < this->u_line->get_slope()) {
-                            delete this->u_line;
-                            this->u_line = new Line(l.get_slope(), l.get_intercept());
+                            this->u_line->set(l.get_slope(), l.get_intercept());
                         }
                     }
                 }
