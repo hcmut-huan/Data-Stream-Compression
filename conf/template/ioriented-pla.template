@@ -6,8 +6,8 @@
     "algorithm": {
         "name": "ioriented-pla",
         "error": <ERROR>,
-        "scale": 1,
-        "up": 0,
-        "down": 0
+        "scale": <SCALE>,
+        "up": <UP_SHIFT>,
+        "down": <DOWN_SHIFT>
     }
 }

@@ -6,6 +6,6 @@
     "algorithm": {
         "name": "chimp",
         "size": <BUFFER_SIZE>,
-        "mode": "128"
+        "mode": <MODE>
     }
 }

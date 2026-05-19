@@ -1,10 +1,10 @@
 {
-    "data": "data/biomedical/MedicalImages.csv",
-    "compress": "out/compress/MedicalImages_optimal-pla.bin",
-    "decompress": "out/decompress/MedicalImages_optimal-pla.csv",
+    "data": "data/Fungi.csv",
+    "compress": "out/compress/Fungi_optimal-pla.bin",
+    "decompress": "out/decompress/Fungi_optimal-pla.csv",
     "interval": 1,
     "algorithm": {
         "name": "optimal-pla",
-        "error": 0.011
+        "error": 4.355
     }
 }

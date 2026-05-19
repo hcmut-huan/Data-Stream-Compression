@@ -1,11 +1,11 @@
 {
-    "data": "data/biomedical/MedicalImages.csv",
-    "compress": "out/compress/MedicalImages_swab.bin",
-    "decompress": "out/decompress/MedicalImages_swab.csv",
+    "data": "data/Fungi.csv",
+    "compress": "out/compress/Fungi_swab.bin",
+    "decompress": "out/decompress/Fungi_swab.csv",
     "interval": 1,
     "algorithm": {
         "name": "swab",
-        "error": 0.011,
+        "error": 4.355,
         "mode": "regression",
         "n_segment": 5
     }

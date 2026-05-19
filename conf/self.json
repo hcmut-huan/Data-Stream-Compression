@@ -1,7 +1,7 @@
 {
-    "data": "data/scientific-research/StarLightCurves.csv",
-    "compress": "out/compress/StarLightCurves_self.bin",
-    "decompress": "out/decompress/StarLightCurves_self.csv",
+    "data": "data/Fungi.csv",
+    "compress": "out/compress/Fungi_self.bin",
+    "decompress": "out/decompress/Fungi_self.csv",
     "interval": 1,
     "algorithm": {
         "name": "self",
