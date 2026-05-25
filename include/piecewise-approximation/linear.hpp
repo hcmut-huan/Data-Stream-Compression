@@ -323,6 +323,7 @@ namespace IOrientedPLA {
             double error = 0;
 
             Point2D* pivot = nullptr;
+            Point2D* prev = nullptr;
             Line* u_line = nullptr;
             Line* l_line = nullptr;
             UpperHull u_cvx;

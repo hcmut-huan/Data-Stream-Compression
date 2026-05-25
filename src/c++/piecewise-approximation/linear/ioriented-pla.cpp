@@ -1,6 +1,9 @@
 #include "piecewise-approximation/linear.hpp"
 
 namespace IOrientedPLA {
+    int count_1 = 0;
+    int count_2 = 0;
+    int count_3 = 0;
 
     bool Compression::__feasible_cone(BinObj* obj) {
         if (std::abs(this->u_line->get_slope()-this->l_line->get_slope()) < EPS) return false;
@@ -95,29 +98,50 @@ namespace IOrientedPLA {
         return false;
     }
 
-    bool Compression::__feasible_rectangle(BinObj* obj) {        
-        Line u_bound = Line::line((this->u_line->get_slope() + this->l_line->get_slope())/2, this->l_cvx.at(0));
-        for (int i=1; i<this->l_cvx.size(); i++) {
-            Point2D p = this->l_cvx.at(i);
-            double intercept = p.y - u_bound.get_slope() * p.x;
-            if (intercept < u_bound.get_intercept()) u_bound.set(u_bound.get_slope(), intercept);
-            else break;
-        }
-        
-        Line l_bound = Line::line(u_bound.get_slope(), this->u_cvx.at(0));
-        for (int i=1; i<this->u_cvx.size(); i++) {
-            Point2D p = this->u_cvx.at(i);
-            double intercept = p.y - l_bound.get_slope() * p.x;
-            if (intercept > l_bound.get_intercept()) l_bound.set(l_bound.get_slope(), intercept);
-            else break;
-        }
+    bool Compression::__feasible_rectangle(BinObj* obj) {
+        double dis = -INFINITY;
+        Line u_bound(INFINITY, INFINITY);
+        Line l_bound(INFINITY, INFINITY);
 
-        long u_right = static_cast<long>(std::floor(this->scale*u_bound.subs(this->length)));
-        long l_right = static_cast<long>(std::ceil(this->scale*l_bound.subs(this->length)));
+        auto solve_min_dis = [&](auto& A, auto& B, bool upper) {
+            for (int i = 0, end = B.size() - 1; i < A.size() - 1; ++i) {
+                Line line = Line::line(A.at(i), A.at(i + 1));
+
+                double m = line.get_slope();
+                double b = line.get_intercept();
+                double best = upper ? INFINITY : -INFINITY;
+
+                for (int j = end; j >= 0; --j) {
+                    double x = B.at(j).y - m * B.at(j).x;
+
+                    if ((upper && x < best) || (!upper && x > best))
+                        best = x;
+                    else {
+                        end = j + 1;
+                        break;
+                    }
+                }
+
+                double d = upper ? best - b : b - best;
+                if (d <= dis) break;
+
+                dis = d;
+
+                (upper ? l_bound : u_bound).set(m, b);
+                (upper ? u_bound : l_bound).set(m, best);
+            }
+        };
+
+        solve_min_dis(this->u_cvx, this->l_cvx, true);
+        solve_min_dis(this->l_cvx, this->u_cvx, false);
+
+        long u_right = static_cast<long>(std::floor(this->scale*u_bound.subs(this->length-1)));
+        long l_right = static_cast<long>(std::ceil(this->scale*l_bound.subs(this->length-1)));
         long u_left = static_cast<long>(std::floor(this->scale*u_bound.get_intercept()));
         long l_left = static_cast<long>(std::ceil(this->scale*l_bound.get_intercept()));
         
         if (u_left >= l_left && u_right >= l_right) {
+            count_2++;
             unsigned long value_1 = ZigZagEncoding::encode(u_left);
             unsigned long value_2 = ZigZagEncoding::encode(u_right);
             
@@ -188,12 +212,14 @@ namespace IOrientedPLA {
         this->scale = atof(params[1]);
         this->upshift = atof(params[2]);
         this->downshift = atof(params[3]);
+        this->prev = new Point2D(INFINITY, INFINITY);
     }
 
     void Compression::finalize() {
         if (this->length >= 2) this->yield();
         
         if (this->pivot != nullptr) delete this->pivot;
+        if (this->prev != nullptr) delete this->prev;
         if (this->u_line != nullptr) delete this->u_line;
         if (this->l_line != nullptr) delete this->l_line;
         this->u_cvx.clear();
@@ -203,7 +229,7 @@ namespace IOrientedPLA {
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
 
-        if (this->__feasible_rectangle(obj)) { return obj; }
+        if (this->__feasible_rectangle(obj)) { count_3++; return obj; }
         else if (this->__feasible_cone(obj)) { return obj; }
         else {
             float slope = (this->u_line->get_slope() + this->l_line->get_slope()) / 2;
@@ -250,7 +276,7 @@ namespace IOrientedPLA {
                 delete this->l_line; this->l_line = nullptr;
                 this->u_cvx.clear(); this->l_cvx.clear();
 
-                this->pivot->x = 0; this->pivot->y = p.y;
+                p.x = 0; this->pivot->x = 0; this->pivot->y = p.y;
                 u_cvx.append(Point2D(0, p.y - this->error));
                 l_cvx.append(Point2D(0, p.y + this->error));
                 this->length = 1;
@@ -266,11 +292,12 @@ namespace IOrientedPLA {
                     for (int i=0; i<this->u_cvx.size(); i++) {
                         Line line = Line::line(this->u_cvx.at(i), Point2D(p.x, p.y + this->error));
                         if (line.get_slope() < min_slp) {
-                            index = i;
                             min_slp = line.get_slope();
-                            this->u_line->set(line.get_slope(), line.get_intercept());
+                            index = i;
                         }
                     }
+                    Line line = Line::line(this->u_cvx.at(index), Point2D(p.x, p.y + this->error));
+                    delete this->u_line; this->u_line = new Line(line.get_slope(), line.get_intercept());
                     this->u_cvx.erase_from_begin(index);
                 }
                 if (update_l) {
@@ -280,11 +307,12 @@ namespace IOrientedPLA {
                     for (int i=0; i<this->l_cvx.size(); i++) {
                         Line line = Line::line(this->l_cvx.at(i), Point2D(p.x, p.y - this->error));
                         if (line.get_slope() > max_slp) {
-                            index = i;
                             max_slp = line.get_slope();
-                            this->l_line->set(line.get_slope(), line.get_intercept());
+                            index = i;
                         }
                     }
+                    Line line = Line::line(this->l_cvx.at(index), Point2D(p.x, p.y - this->error));
+                    delete this->l_line; this->l_line = new Line(line.get_slope(), line.get_intercept());
                     this->l_cvx.erase_from_begin(index);
                 }
 
@@ -292,6 +320,8 @@ namespace IOrientedPLA {
                 if (update_l) this->u_cvx.append(Point2D(p.x, p.y - this->error));
             }
         }
+
+        this->prev->x = p.x; this->prev->y = p.y;
     }
     // End: compression
 
@@ -343,7 +373,7 @@ namespace IOrientedPLA {
         else if (flag == 4) {
             long value_1 = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
             long value_2 = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
-            Line line = Line::line(Point2D(0, (double) value_1 / this->scale), Point2D(length, (double) value_2 / this->scale));
+            Line line = Line::line(Point2D(0, (double) value_1 / this->scale), Point2D(length-1, (double) value_2 / this->scale));
 
             slp = line.get_slope();
             intercept = line.get_intercept();
@@ -353,12 +383,12 @@ namespace IOrientedPLA {
             long value = ZigZagEncoding::decode(VariableByteEncoding::decode(compress_data));
 
             if (root > 0) {
-                Line line = Line::line(Point2D(-root, this->downshift), Point2D(length, (double) value / this->scale));
+                Line line = Line::line(Point2D(-root, this->downshift), Point2D(length-1, (double) value / this->scale));
                 slp = line.get_slope();
                 intercept = line.get_intercept();
             }
             else {
-                Line line = Line::line(Point2D(root, this->upshift), Point2D(length, (double) value / this->scale));
+                Line line = Line::line(Point2D(root, this->upshift), Point2D(length-1, (double) value / this->scale));
                 slp = line.get_slope();
                 intercept = line.get_intercept();
             }
@@ -381,7 +411,7 @@ namespace IOrientedPLA {
         else if (flag == 7) {
             long value_1 = ZigZagEncoding::decode(EliasGammaEncoding::decode(compress_data) - 1);
             long value_2 = ZigZagEncoding::decode(EliasGammaEncoding::decode(compress_data) - 1);
-            Line line = Line::line(Point2D(0, (double) value_1 / this->scale), Point2D(length, (double) value_2 / this->scale));
+            Line line = Line::line(Point2D(0, (double) value_1 / this->scale), Point2D(length-1, (double) value_2 / this->scale));
         
             slp = line.get_slope();
             intercept = line.get_intercept();
