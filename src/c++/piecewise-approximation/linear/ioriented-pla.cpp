@@ -1,10 +1,6 @@
 #include "piecewise-approximation/linear.hpp"
 
 namespace IOrientedPLA {
-    int count_1 = 0;
-    int count_2 = 0;
-    int count_3 = 0;
-
     bool Compression::__feasible_cone(BinObj* obj) {
         if (std::abs(this->u_line->get_slope()-this->l_line->get_slope()) < EPS) return false;
 
@@ -141,7 +137,6 @@ namespace IOrientedPLA {
         long l_left = static_cast<long>(std::ceil(this->scale*l_bound.get_intercept()));
         
         if (u_left >= l_left && u_right >= l_right) {
-            count_2++;
             unsigned long value_1 = ZigZagEncoding::encode(u_left);
             unsigned long value_2 = ZigZagEncoding::encode(u_right);
             
@@ -217,6 +212,8 @@ namespace IOrientedPLA {
 
     void Compression::finalize() {
         if (this->length >= 2) this->yield();
+        std::cout << "rec: " << rec << "\n";
+        std::cout << "cone: " << cone << "\n";
         
         if (this->pivot != nullptr) delete this->pivot;
         if (this->prev != nullptr) delete this->prev;
@@ -229,7 +226,7 @@ namespace IOrientedPLA {
     BinObj* Compression::serialize() {
         BinObj* obj = new BinObj;
 
-        if (this->__feasible_rectangle(obj)) { count_3++; return obj; }
+        if (this->__feasible_rectangle(obj)) { return obj; }
         else if (this->__feasible_cone(obj)) { return obj; }
         else {
             float slope = (this->u_line->get_slope() + this->l_line->get_slope()) / 2;
@@ -335,7 +332,7 @@ namespace IOrientedPLA {
     void Decompression::finalize() {
         // Do nothing
     }
-
+    
     CSVObj* Decompression::decompress(BinObj* compress_data) {
         CSVObj* base_obj = nullptr;
         CSVObj* prev_obj = nullptr;
