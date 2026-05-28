@@ -212,8 +212,6 @@ namespace IOrientedPLA {
 
     void Compression::finalize() {
         if (this->length >= 2) this->yield();
-        std::cout << "rec: " << rec << "\n";
-        std::cout << "cone: " << cone << "\n";
         
         if (this->pivot != nullptr) delete this->pivot;
         if (this->prev != nullptr) delete this->prev;
